@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="description" content="TaskFlow PWA - Aplicación progresiva de gestión de tareas 100% offline con persistencia dual." />
+  <title>TaskFlow • Lista de Tareas PWA</title>
+
+  <!-- PWA Manifest Embebido mediante Data URL -->
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22TaskFlow%20PWA%20-%20Lista%20de%20Tareas%22%2C%22short_name%22%3A%22TaskFlow%22%2C%22description%22%3A%22Gesti%C3%B3n%20inteligente%20de%20tareas%20con%20soporte%20offline%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%236366f1%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20512%20512'%20width%3D'512'%20height%3D'512'%253E%253Crect%20width%3D'512'%20height%3D'512'%20rx%3D'128'%20fill='%25236366f1'%2F%253E%253Cpath%20d%3D'M140%20256%20L220%20336%20L372%20176'%20fill%3D'none'%20stroke='white'%20stroke-width='48'%20stroke-linecap='round'%20stroke-linejoin='round'%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D" />
+
+  <!-- Favicon SVG Embebido -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%236366f1'/%3E%3Cpath d='M28 50 L42 64 L72 34' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       VARIABLES Y TEMAS (CSS CUSTOM PROPERTIES)
+       ========================================================================== */
+    :root {
+      --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-spring: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      /* Categorías Colores Base */
+      --cat-trabajo: #3b82f6;
+      --cat-personal: #8b5cf6;
+      --cat-estudio: #10b981;
+      --cat-hogar: #f59e0b;
+      --cat-urgente: #ef4444;
+      --cat-otro: #06b6d4;
+
+      /* Prioridades */
+      --prio-alta: #ef4444;
+      --prio-media: #f59e0b;
+      --prio-baja: #10b981;
+    }
+
+    /* Tema Oscuro (Predeterminado) */
+    [data-theme="dark"] {
+      --bg-body: #0b0f19;
+      --bg-surface: #111827;
+      --bg-card: rgba(17, 24, 39, 0.75);
+      --bg-card-hover: rgba(31, 41, 55, 0.85);
+      --bg-subtle: #1e293b;
+      --bg-input: #1f2937;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --accent: #6366f1;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --accent-hover: #4f46e5;
+      --accent-light: rgba(99, 102, 241, 0.15);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+      --tag-bg: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Tema Claro */
+    [data-theme="light"] {
+      --bg-body: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-input: #f8fafc;
+      --border-color: rgba(0, 0, 0, 0.07);
+      --border-focus: #6366f1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --accent: #4f46e5;
+      --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --accent-hover: #4338ca;
+      --accent-light: rgba(79, 70, 229, 0.08);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+      --tag-bg: rgba(0, 0, 0, 0.04);
+    }
+
+    /* ==========================================================================
+       RESET Y ESTILOS GLOBALES
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 1rem 3rem 1rem;
+      transition: background-color var(--transition-base), color var(--transition-base);
+      line-height: 1.5;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* Contenedor Principal */
+    .app-container {
+      width: 100%;
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ==========================================================================
+       HEADER & BARRA DE ACCIONES
+       ========================================================================== */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.25rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pwa-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      background: var(--accent-light);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* ==========================================================================
+       DASHBOARD STATS & PROGRESO
+       ========================================================================== */
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      box-shadow: var(--card-shadow);
+      transition: transform var(--transition-fast);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.1;
+    }
+
+    .stat-value.pending {
+      color: var(--prio-media);
+    }
+
+    .stat-value.completed {
+      color: var(--prio-baja);
+    }
+
+    .progress-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-subtle);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-gradient);
+      border-radius: 999px;
+      width: 0%;
+      transition: width var(--transition-spring);
+    }
+
+    /* ==========================================================================
+       FORMULARIO CREACIÓN DE TAREAS
+       ========================================================================== */
+    .task-creator-box {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 1.25rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .input-main-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .text-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .text-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .text-input::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .btn-submit {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .btn-submit:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.97);
+    }
+
+    .creator-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .select-custom {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.45rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+      transition: border-color var(--transition-fast);
+    }
+
+    .select-custom:focus {
+      border-color: var(--border-focus);
+    }
+
+    .select-custom option {
+      background: var(--bg-surface);
+      color: var(--text-main);
+    }
+
+    .date-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.4rem 0.6rem;
+      font-family: inherit;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .date-input::-webkit-calendar-picker-indicator {
+      filter: invert(0.6);
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       FILTROS, BÚSQUEDA Y CATEGORÍAS
+       ========================================================================== */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-sort-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.85rem;
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.65rem 0.85rem 0.65rem 2.4rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .filter-pills-row {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .filter-pills-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .filter-pill:hover {
+      color: var(--text-main);
+      background: var(--bg-card-hover);
+    }
+
+    .filter-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    .badge-count {
+      font-size: 0.72rem;
+      padding: 0.05rem 0.35rem;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-pill.active .badge-count {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .category-chips {
+      display: flex;
+      gap: 0.35rem;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .category-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-chip {
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--tag-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .cat-chip:hover {
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    .cat-chip.active {
+      border-color: var(--chip-color, var(--accent));
+      background: var(--chip-bg, var(--accent-light));
+      color: var(--text-main);
+    }
+
+    .cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--chip-color, var(--accent));
+    }
+
+    /* ==========================================================================
+       LISTA DE TAREAS
+       ========================================================================== */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      min-height: 120px;
+    }
+
+    .task-item {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: var(--card-shadow);
+      transition: all var(--transition-base);
+      animation: taskFadeIn 250ms ease forwards;
+      position: relative;
+    }
+
+    @keyframes taskFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .task-item:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: var(--bg-card-hover);
+      transform: translateX(2px);
+    }
+
+    .task-item.completed {
+      opacity: 0.6;
+      background: var(--bg-subtle);
+    }
+
+    .task-item.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-subtle);
+    }
+
+    /* Checkbox Personalizado */
+    .custom-checkbox {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      border: 2px solid var(--text-subtle);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-spring);
+      background: transparent;
+    }
+
+    .task-item:hover .custom-checkbox {
+      border-color: var(--accent);
+    }
+
+    .task-item.completed .custom-checkbox {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      transform: scale(1.05);
+    }
+
+    .custom-checkbox svg {
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all var(--transition-spring);
+      color: white;
+    }
+
+    .task-item.completed .custom-checkbox svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Contenido de la Tarea */
+    .task-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      word-break: break-word;
+      transition: color var(--transition-fast);
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+    }
+
+    .meta-tag {
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .tag-category {
+      background: var(--tag-bg);
+      color: var(--cat-color, var(--accent));
+      border: 1px solid currentColor;
+      opacity: 0.9;
+    }
+
+    .tag-priority {
+      background: var(--prio-bg);
+      color: var(--prio-color);
+    }
+
+    .tag-due {
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .tag-due.overdue {
+      color: var(--prio-alta);
+      font-weight: 700;
+    }
+
+    /* Acciones de la Tarea */
+    .task-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      opacity: 0.85;
+      transition: opacity var(--transition-fast);
+    }
+
+    .task-item:hover .task-actions {
+      opacity: 1;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .action-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text-main);
+    }
+
+    .action-btn.btn-delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    /* ==========================================================================
+       ESTADO VACÍO (EMPTY STATE)
+       ========================================================================== */
+    .empty-state {
+      background: var(--bg-card);
+      border: 1px dashed var(--border-color);
+      border-radius: 18px;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--bg-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .empty-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .empty-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 300px;
+    }
+
+    /* ==========================================================================
+       MODAL / DIALOGS (EDICIÓN Y BACKUP)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-base);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--glass-shadow);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      transform: scale(0.95) translateY(10px);
+      transition: transform var(--transition-spring);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-secondary {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.6rem 1.1rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+    }
+
+    /* Modal Backup Específico */
+    .backup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .backup-option-card {
+      border: 1px solid var(--border-color);
+      background: var(--bg-subtle);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .backup-option-card:hover {
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .backup-option-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .backup-option-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       TOAST NOTIFICATIONS
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 2000;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.75rem 1.1rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: toastSlideIn 250ms ease forwards;
+      pointer-events: auto;
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--prio-baja);
+    }
+
+    .toast.info {
+      border-left: 4px solid var(--accent);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--prio-alta);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE & MOBILE TWEAKS
+       ========================================================================== */
+    @media (max-width: 640px) {
+      body {
+        padding: 0.75rem 0.75rem 2rem 0.75rem;
+      }
+      .input-main-row {
+        flex-direction: column;
+      }
+      .btn-submit {
+        justify-content: center;
+        width: 100%;
+      }
+      .creator-options {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .dashboard-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.4rem;
+      }
+      .stat-card {
+        padding: 0.6rem;
+      }
+      .stat-value {
+        font-size: 1.25rem;
+      }
+      .backup-grid {
+        grid-template-columns: 1fr;
+      }
+      .toast-container {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+
+    <!-- HEADER DE LA PWA -->
+    <header class="app-header" id="app-header">
+      <div class="brand-group">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">
+            TaskFlow
+            <span class="pwa-pill" id="pwa-status-badge">PWA • Offline</span>
+          </h1>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botón Backup / Sincronización -->
+        <button class="icon-btn" id="btn-open-backup" title="Exportar / Importar Respaldo JSON" aria-label="Exportar o Importar Tareas">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+
+        <!-- Selector de Tema (Oscuro / Claro) -->
+        <button class="icon-btn" id="btn-theme-toggle" title="Cambiar Tema (Oscuro/Claro)" aria-label="Cambiar Tema">
+          <svg id="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg id="theme-icon-sun" style="display: none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- RESUMEN / DASHBOARD DE MÉTRICAS -->
+    <section class="dashboard-stats" aria-label="Métricas de tareas">
+      <div class="stat-card" id="stat-card-total">
+        <span class="stat-label">Total</span>
+        <span class="stat-value" id="stat-total-count">0</span>
+      </div>
+      <div class="stat-card" id="stat-card-pending">
+        <span class="stat-label">Pendientes</span>
+        <span class="stat-value pending" id="stat-pending-count">0</span>
+      </div>
+      <div class="stat-card" id="stat-card-completed">
+        <span class="stat-label">Completadas</span>
+        <span class="stat-value completed" id="stat-completed-count">0</span>
+      </div>
+    </section>
+
+    <!-- BARRA DE PROGRESO -->
+    <div class="progress-container" id="progress-container">
+      <div class="progress-header">
+        <span>Progreso general</span>
+        <span id="progress-percentage-text">0%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- FORMULARIO CREACIÓN DE TAREAS -->
+    <section class="task-creator-box" id="task-creator-box">
+      <form id="task-form" onsubmit="event.preventDefault(); window.TaskFlowApp.handleAddTask();">
+        <div class="input-main-row">
+          <input 
+            type="text" 
+            id="input-task-title" 
+            class="text-input" 
+            placeholder="¿Qué necesitas hacer hoy?..." 
+            autocomplete="off"
+            required 
+          />
+          <button type="submit" class="btn-submit" id="btn-add-task">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Agregar</span>
+          </button>
+        </div>
+
+        <div class="creator-options">
+          <!-- Categoría -->
+          <select id="select-task-category" class="select-custom" title="Seleccionar Categoría">
+            <option value="Trabajo">💼 Trabajo</option>
+            <option value="Personal">🌟 Personal</option>
+            <option value="Estudio">📚 Estudio</option>
+            <option value="Hogar">🏠 Hogar</option>
+            <option value="Urgente">🔥 Urgente</option>
+            <option value="Parqueadero">🚗 Parqueadero</option>
+          </select>
+
+          <!-- Prioridad -->
+          <select id="select-task-priority" class="select-custom" title="Nivel de Prioridad">
+            <option value="media">⚡ Prioridad Media</option>
+            <option value="alta">🔴 Prioridad Alta</option>
+            <option value="baja">🟢 Prioridad Baja</option>
+          </select>
+
+          <!-- Fecha Límite -->
+          <input type="date" id="input-task-due" class="date-input" title="Fecha límite opcional" />
+        </div>
+      </form>
+    </section>
+
+    <!-- PANEL DE CONTROLES: BÚSQUEDA, FILTROS Y CATEGORÍAS -->
+    <section class="controls-panel" id="controls-panel">
+      <!-- Búsqueda y Ordenamiento -->
+      <div class="search-sort-row">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="search" 
+            id="input-search-tasks" 
+            class="search-input" 
+            placeholder="Buscar por texto o etiqueta..." 
+            oninput="window.TaskFlowApp.handleSearch(this.value)"
+          />
+        </div>
+        <select id="select-sort-order" class="select-custom" onchange="window.TaskFlowApp.handleSortChange(this.value)" title="Ordenar Tareas">
+          <option value="created-desc">🕒 Más recientes</option>
+          <option value="created-asc">⏳ Más antiguas</option>
+          <option value="due-date">📅 Fecha límite</option>
+          <option value="priority">🔥 Prioridad</option>
+          <option value="alpha">🔤 Alfabético</option>
+        </select>
+      </div>
+
+      <!-- Filtros de Estado -->
+      <div class="filter-pills-row" id="filter-status-row" role="tablist">
+        <button class="filter-pill active" data-filter="all" onclick="window.TaskFlowApp.setFilter('all')">
+          Todas <span class="badge-count" id="badge-count-all">0</span>
+        </button>
+        <button class="filter-pill" data-filter="pending" onclick="window.TaskFlowApp.setFilter('pending')">
+          Pendientes <span class="badge-count" id="badge-count-pending">0</span>
+        </button>
+        <button class="filter-pill" data-filter="completed" onclick="window.TaskFlowApp.setFilter('completed')">
+          Completadas <span class="badge-count" id="badge-count-completed">0</span>
+        </button>
+      </div>
+
+      <!-- Chips de Filtro por Categoría -->
+      <div class="category-chips" id="category-chips-row">
+        <button class="cat-chip active" data-cat="all" onclick="window.TaskFlowApp.setCategoryFilter('all')">
+          <span>✨ Todas las categorías</span>
+        </button>
+        <button class="cat-chip" data-cat="Trabajo" style="--chip-color: var(--cat-trabajo);" onclick="window.TaskFlowApp.setCategoryFilter('Trabajo')">
+          <span class="cat-dot"></span> Trabajo
+        </button>
+        <button class="cat-chip" data-cat="Personal" style="--chip-color: var(--cat-personal);" onclick="window.TaskFlowApp.setCategoryFilter('Personal')">
+          <span class="cat-dot"></span> Personal
+        </button>
+        <button class="cat-chip" data-cat="Estudio" style="--chip-color: var(--cat-estudio);" onclick="window.TaskFlowApp.setCategoryFilter('Estudio')">
+          <span class="cat-dot"></span> Estudio
+        </button>
+        <button class="cat-chip" data-cat="Hogar" style="--chip-color: var(--cat-hogar);" onclick="window.TaskFlowApp.setCategoryFilter('Hogar')">
+          <span class="cat-dot"></span> Hogar
+        </button>
+        <button class="cat-chip" data-cat="Urgente" style="--chip-color: var(--cat-urgente);" onclick="window.TaskFlowApp.setCategoryFilter('Urgente')">
+          <span class="cat-dot"></span> Urgente
+        </button>
+        <button class="cat-chip" data-cat="Parqueadero" style="--chip-color: var(--cat-otro);" onclick="window.TaskFlowApp.setCategoryFilter('Parqueadero')">
+          <span class="cat-dot"></span> Parqueadero
+        </button>
+      </div>
+    </section>
+
+    <!-- CONTENEDOR DE LA LISTA DE TAREAS -->
+    <main class="task-list" id="task-list-container" aria-live="polite">
+      <!-- Se inyecta dinámicamente con JavaScript -->
+    </main>
+
+  </div>
+
+  <!-- ==========================================================================
+       MODAL DE EDICIÓN DE TAREA
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-edit-task" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-edit-title">Editar Tarea</h2>
+        <button class="action-btn" onclick="window.TaskFlowApp.closeModal('modal-edit-task')" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-task-id" />
+        <div class="form-group">
+          <label class="form-label" for="edit-task-title">Título de la tarea</label>
+          <input type="text" id="edit-task-title" class="text-input" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-task-category">Categoría</label>
+          <select id="edit-task-category" class="select-custom">
+            <option value="Trabajo">💼 Trabajo</option>
+            <option value="Personal">🌟 Personal</option>
+            <option value="Estudio">📚 Estudio</option>
+            <option value="Hogar">🏠 Hogar</option>
+            <option value="Urgente">🔥 Urgente</option>
+            <option value="Parqueadero">🚗 Parqueadero</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-task-priority">Prioridad</label>
+          <select id="edit-task-priority" class="select-custom">
+            <option value="alta">🔴 Alta</option>
+            <option value="media">⚡ Media</option>
+            <option value="baja">🟢 Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-task-due">Fecha Límite</label>
+          <input type="date" id="edit-task-due" class="date-input" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="window.TaskFlowApp.closeModal('modal-edit-task')">Cancelar</button>
+        <button class="btn-submit" onclick="window.TaskFlowApp.saveEditedTask()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL DE RESPALDO (EXPORTAR / IMPORTAR JSON)
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-backup" role="dialog" aria-modal="true" aria-labelledby="modal-backup-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-backup-title">Persistencia & Respaldo</h2>
+        <button class="action-btn" onclick="window.TaskFlowApp.closeModal('modal-backup')" aria-label="Cerrar modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Tus tareas se guardan automáticamente en tu navegador. Puedes generar copias de seguridad portátiles en formato JSON o restaurarlas en cualquier dispositivo.
+        </p>
+
+        <div class="backup-grid">
+          <!-- Exportar -->
+          <div class="backup-option-card" onclick="window.TaskFlowApp.exportTasksJSON()">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span class="backup-option-title">Exportar JSON</span>
+            <span class="backup-option-desc">Descarga una copia completa de tus tareas</span>
+          </div>
+
+          <!-- Importar -->
+          <div class="backup-option-card" onclick="document.getElementById('import-file-input').click();">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--prio-baja)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span class="backup-option-title">Importar JSON</span>
+            <span class="backup-option-desc">Carga tareas desde un archivo previo</span>
+            <input type="file" id="import-file-input" accept=".json,application/json" style="display: none;" onchange="window.TaskFlowApp.handleImportFile(event)" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="window.TaskFlowApp.closeModal('modal-backup')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
+  <div class="toast-container" id="toast-container" aria-live="assertive"></div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT MONOLÍTICO: PWA SERVICE WORKER Y LÓGICA DE NEGOCIO
+       ========================================================================== -->
+  <script>
+    /**
+     * REGISTRO DEL SERVICE WORKER EMBEBIDO MEDIANTE BLOB
+     * Proporciona capacidades completas de Progressive Web App (PWA) 100% offline.
+     */
+    (function registerEmbeddedServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        const swScript = `
+          const CACHE_NAME = 'taskflow-pwa-v1';
+          self.addEventListener('install', (event) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (event) => {
+            event.waitUntil(self.clients.claim());
+          });
+          self.addEventListener('fetch', (event) => {
+            if (event.request.method !== 'GET') return;
+            event.respondWith(
+              fetch(event.request)
+                .then((networkResponse) => {
+                  if (networkResponse && networkResponse.status === 200) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+                  }
+                  return networkResponse;
+                })
+                .catch(() => caches.match(event.request))
+            );
+          });
+        `;
+
+        try {
+          const blob = new Blob([swScript], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(swUrl)
+            .then(() => console.log('Service Worker PWA activo y listo para funcionamiento offline.'))
+            .catch((err) => console.warn('Aviso de Service Worker:', err.message));
+        } catch (e) {
+          console.warn('Registro SW en modo contingencia.');
+        }
+      }
+    })();
+
+    /**
+     * MÓDULO PRINCIPAL DE LA APLICACIÓN TASKFLOW
+     */
+    window.TaskFlowApp = (function () {
+      // Claves de almacenamiento
+      const STORAGE_KEY = 'taskflow_tasks_data_v1';
+      const THEME_KEY = 'taskflow_theme_pref';
+
+      // Categorías de configuración
+      const CATEGORY_MAP = {
+        'Trabajo': { color: 'var(--cat-trabajo)', label: 'Trabajo' },
+        'Personal': { color: 'var(--cat-personal)', label: 'Personal' },
+        'Estudio': { color: 'var(--cat-estudio)', label: 'Estudio' },
+        'Hogar': { color: 'var(--cat-hogar)', label: 'Hogar' },
+        'Urgente': { color: 'var(--cat-urgente)', label: 'Urgente' },
+        'Parqueadero': { color: 'var(--cat-otro)', label: 'Parqueadero' }
+      };
+
+      // Tareas de demostración iniciales
+      const INITIAL_TASKS = [
+        {
+          id: 'demo-1',
+          title: 'Explorar las funciones de TaskFlow PWA',
+          category: 'Personal',
+          priority: 'alta',
+          dueDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+          completed: false,
+          createdAt: Date.now() - 3600000
+        },
+        {
+          id: 'demo-2',
+          title: 'Exportar respaldo en formato JSON',
+          category: 'Trabajo',
+          priority: 'media',
+          dueDate: '',
+          completed: false,
+          createdAt: Date.now() - 7200000
+        },
+        {
+          id: 'demo-3',
+          title: 'Renovar boleto mensual de parqueadero',
+          category: 'Parqueadero',
+          priority: 'alta',
+          dueDate: new Date(Date.now() + 172800000).toISOString().split('T')[0],
+          completed: false,
+          createdAt: Date.now() - 10800000
+        },
+        {
+          id: 'demo-4',
+          title: 'Instalar la aplicación como PWA en mi pantalla de inicio',
+          category: 'Estudio',
+          priority: 'baja',
+          dueDate: '',
+          completed: true,
+          createdAt: Date.now() - 14400000
+        }
+      ];
+
+      // Estado reactivo de la aplicación
+      let state = {
+        tasks: [],
+        filter: 'all',          // 'all' | 'pending' | 'completed'
+        categoryFilter: 'all',  // 'all' | 'Trabajo' | ...
+        searchQuery: '',
+        sortBy: 'created-desc', // 'created-desc' | 'created-asc' | 'due-date' | 'priority' | 'alpha'
+        theme: 'dark'
+      };
+
+      /**
+       * Inicialización de la aplicación
+       */
+      function init() {
+        loadTheme();
+        loadTasks();
+        render();
+        setupEventListeners();
+      }
+
+      /**
+       * Configuración de oyentes de eventos globales
+       */
+      function setupEventListeners() {
+        // Toggle de Tema
+        const btnTheme = document.getElementById('btn-theme-toggle');
+        if (btnTheme) {
+          btnTheme.addEventListener('click', toggleTheme);
+        }
+
+        // Modal Backup
+        const btnBackup = document.getElementById('btn-open-backup');
+        if (btnBackup) {
+          btnBackup.addEventListener('click', () => openModal('modal-backup'));
+        }
+
+        // Cerrar modales con ESC
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeModal('modal-edit-task');
+            closeModal('modal-backup');
+          }
+        });
+
+        // Cerrar modal al hacer clic en el backdrop
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+              closeModal(modal.id);
+            }
+          });
+        });
+      }
+
+      /**
+       * Persistencia Local: Carga de tareas desde localStorage
+       */
+      function loadTasks() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (stored) {
+            state.tasks = JSON.parse(stored);
+          } else {
+            state.tasks = [...INITIAL_TASKS];
+            saveTasks();
+          }
+        } catch (e) {
+          console.error('Error al leer de localStorage:', e);
+          state.tasks = [...INITIAL_TASKS];
+        }
+      }
+
+      /**
+       * Persistencia Local: Guardado automático
+       */
+      function saveTasks() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks));
+        } catch (e) {
+          console.error('Error al guardar en localStorage:', e);
+          showToast('Error al persistir cambios localmente', 'error');
+        }
+      }
+
+      /**
+       * Manejo de temas (Oscuro / Claro)
+       */
+      function loadTheme() {
+        const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+        setTheme(savedTheme);
+      }
+
+      function setTheme(theme) {
+        state.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_KEY, theme);
+
+        const moonIcon = document.getElementById('theme-icon-moon');
+        const sunIcon = document.getElementById('theme-icon-sun');
+        if (moonIcon && sunIcon) {
+          if (theme === 'dark') {
+            moonIcon.style.display = 'block';
+            sunIcon.style.display = 'none';
+          } else {
+            moonIcon.style.display = 'none';
+            sunIcon.style.display = 'block';
+          }
+        }
+      }
+
+      function toggleTheme() {
+        const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
+        setTheme(nextTheme);
+        showToast(`Tema ${nextTheme === 'dark' ? 'Oscuro' : 'Claro'} activado`, 'info');
+      }
+
+      /**
+       * Agregar nueva tarea
+       */
+      function handleAddTask() {
+        const titleInput = document.getElementById('input-task-title');
+        const catSelect = document.getElementById('select-task-category');
+        const prioSelect = document.getElementById('select-task-priority');
+        const dueInput = document.getElementById('input-task-due');
+
+        const title = titleInput.value.trim();
+        if (!title) return;
+
+        const newTask = {
+          id: 'task-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+          title: title,
+          category: catSelect ? catSelect.value : 'Personal',
+          priority: prioSelect ? prioSelect.value : 'media',
+          dueDate: dueInput ? dueInput.value : '',
+          completed: false,
+          createdAt: Date.now()
+        };
+
+        state.tasks.unshift(newTask);
+        saveTasks();
+        render();
+
+        // Limpiar inputs
+        titleInput.value = '';
+        if (dueInput) dueInput.value = '';
+        titleInput.focus();
+
+        showToast('Tarea agregada exitosamente', 'success');
+      }
+
+      /**
+       * Alternar estado completada / pendiente
+       */
+      function toggleTask(id) {
+        const task = state.tasks.find(t => t.id === id);
+        if (task) {
+          task.completed = !task.completed;
+          saveTasks();
+          render();
+          if (task.completed) {
+            showToast('¡Tarea completada!', 'success');
+          }
+        }
+      }
+
+      /**
+       * Eliminar tarea
+       */
+      function deleteTask(id) {
+        const index = state.tasks.findIndex(t => t.id === id);
+        if (index !== -1) {
+          const removed = state.tasks.splice(index, 1)[0];
+          saveTasks();
+          render();
+          showToast(`Tarea eliminada`, 'info');
+        }
+      }
+
+      /**
+       * Abrir modal de edición
+       */
+      function openEditTask(id) {
+        const task = state.tasks.find(t => t.id === id);
+        if (!task) return;
+
+        document.getElementById('edit-task-id').value = task.id;
+        document.getElementById('edit-task-title').value = task.title;
+        document.getElementById('edit-task-category').value = task.category || 'Personal';
+        document.getElementById('edit-task-priority').value = task.priority || 'media';
+        document.getElementById('edit-task-due').value = task.dueDate || '';
+
+        openModal('modal-edit-task');
+      }
+
+      /**
+       * Guardar edición
+       */
+      function saveEditedTask() {
+        const id = document.getElementById('edit-task-id').value;
+        const task = state.tasks.find(t => t.id === id);
+        if (!task) return;
+
+        const newTitle = document.getElementById('edit-task-title').value.trim();
+        if (!newTitle) {
+          showToast('El título no puede estar vacío', 'error');
+          return;
+        }
+
+        task.title = newTitle;
+        task.category = document.getElementById('edit-task-category').value;
+        task.priority = document.getElementById('edit-task-priority').value;
+        task.dueDate = document.getElementById('edit-task-due').value;
+
+        saveTasks();
+        render();
+        closeModal('modal-edit-task');
+        showToast('Cambios guardados con éxito', 'success');
+      }
+
+      /**
+       * Filtros y Búsqueda
+       */
+      function setFilter(filterType) {
+        state.filter = filterType;
+        document.querySelectorAll('#filter-status-row .filter-pill').forEach(pill => {
+          if (pill.getAttribute('data-filter') === filterType) {
+            pill.classList.add('active');
+          } else {
+            pill.classList.remove('active');
+          }
+        });
+        render();
+      }
+
+      function setCategoryFilter(category) {
+        state.categoryFilter = category;
+        document.querySelectorAll('#category-chips-row .cat-chip').forEach(chip => {
+          if (chip.getAttribute('data-cat') === category) {
+            chip.classList.add('active');
+          } else {
+            chip.classList.remove('active');
+          }
+        });
+        render();
+      }
+
+      function handleSearch(query) {
+        state.searchQuery = query.toLowerCase().trim();
+        render();
+      }
+
+      function handleSortChange(order) {
+        state.sortBy = order;
+        render();
+      }
+
+      /**
+       * Persistencia Dual: Exportar a archivo JSON
+       */
+      function exportTasksJSON() {
+        try {
+          const exportData = {
+            appName: 'TaskFlow PWA',
+            version: '1.0',
+            exportedAt: new Date().toISOString(),
+            totalTasks: state.tasks.length,
+            tasks: state.tasks
+          };
+
+          const jsonStr = JSON.stringify(exportData, null, 2);
+          const blob = new Blob([jsonStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          
+          const a = document.createElement('a');
+          const dateStr = new Date().toISOString().split('T')[0];
+          a.href = url;
+          a.download = `taskflow-respaldo-${dateStr}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          closeModal('modal-backup');
+          showToast(`Respaldo descargado (${state.tasks.length} tareas)`, 'success');
+        } catch (e) {
+          console.error('Error al exportar:', e);
+          showToast('Error al generar archivo de respaldo', 'error');
+        }
+      }
+
+      /**
+       * Persistencia Dual: Importar desde archivo JSON
+       */
+      function handleImportFile(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            let importedTasks = [];
+
+            if (Array.isArray(data)) {
+              importedTasks = data;
+            } else if (data && Array.isArray(data.tasks)) {
+              importedTasks = data.tasks;
+            } else {
+              throw new Error('El archivo no contiene un formato de tareas válido.');
+            }
+
+            // Normalización y validación mínima
+            const validTasks = importedTasks.map((t, idx) => ({
+              id: t.id || 'imp-' + Date.now() + '-' + idx,
+              title: String(t.title || 'Tarea sin título'),
+              category: t.category || 'Personal',
+              priority: ['alta', 'media', 'baja'].includes(t.priority) ? t.priority : 'media',
+              dueDate: t.dueDate || '',
+              completed: Boolean(t.completed),
+              createdAt: t.createdAt || Date.now()
+            }));
+
+            // Combinar o reemplazar (reemplazamos con los datos importados)
+            state.tasks = validTasks;
+            saveTasks();
+            render();
+
+            closeModal('modal-backup');
+            showToast(`${validTasks.length} tareas importadas con éxito`, 'success');
+            event.target.value = ''; // Reset input
+          } catch (err) {
+            console.error('Error al importar:', err);
+            showToast('Formato JSON no válido o corrupto', 'error');
+          }
+        };
+
+        reader.readAsText(file);
+      }
+
+      /**
+       * Renderizado reactivo de la interfaz
+       */
+      function render() {
+        const totalCount = state.tasks.length;
+        const pendingCount = state.tasks.filter(t => !t.completed).length;
+        const completedCount = totalCount - pendingCount;
+        const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+        // Actualizar Estadísticas
+        const elTotal = document.getElementById('stat-total-count');
+        const elPending = document.getElementById('stat-pending-count');
+        const elCompleted = document.getElementById('stat-completed-count');
+        if (elTotal) elTotal.textContent = totalCount;
+        if (elPending) elPending.textContent = pendingCount;
+        if (elCompleted) elCompleted.textContent = completedCount;
+
+        // Actualizar Badges de Filtro
+        const bAll = document.getElementById('badge-count-all');
+        const bPend = document.getElementById('badge-count-pending');
+        const bComp = document.getElementById('badge-count-completed');
+        if (bAll) bAll.textContent = totalCount;
+        if (bPend) bPend.textContent = pendingCount;
+        if (bComp) bComp.textContent = completedCount;
+
+        // Barra de Progreso
+        const elPercentText = document.getElementById('progress-percentage-text');
+        const elBarFill = document.getElementById('progress-bar-fill');
+        if (elPercentText) elPercentText.textContent = `${percent}%`;
+        if (elBarFill) elBarFill.style.width = `${percent}%`;
+
+        // Filtrado
+        let filtered = state.tasks.filter(task => {
+          // Filtro por Estado
+          if (state.filter === 'pending' && task.completed) return false;
+          if (state.filter === 'completed' && !task.completed) return false;
+
+          // Filtro por Categoría
+          if (state.categoryFilter !== 'all' && task.category !== state.categoryFilter) return false;
+
+          // Filtro por Búsqueda
+          if (state.searchQuery) {
+            const matchTitle = task.title.toLowerCase().includes(state.searchQuery);
+            const matchCat = (task.category || '').toLowerCase().includes(state.searchQuery);
+            if (!matchTitle && !matchCat) return false;
+          }
+
+          return true;
+        });
+
+        // Ordenamiento
+        filtered.sort((a, b) => {
+          if (state.sortBy === 'created-desc') return (b.createdAt || 0) - (a.createdAt || 0);
+          if (state.sortBy === 'created-asc') return (a.createdAt || 0) - (b.createdAt || 0);
+          if (state.sortBy === 'alpha') return a.title.localeCompare(b.title);
+          if (state.sortBy === 'priority') {
+            const weight = { 'alta': 3, 'media': 2, 'baja': 1 };
+            return (weight[b.priority] || 2) - (weight[a.priority] || 2);
+          }
+          if (state.sortBy === 'due-date') {
+            if (!a.dueDate) return 1;
+            if (!b.dueDate) return -1;
+            return a.dueDate.localeCompare(b.dueDate);
+          }
+          return 0;
+        });
+
+        // Renderizado del DOM de Tareas
+        const listContainer = document.getElementById('task-list-container');
+        if (!listContainer) return;
+
+        if (filtered.length === 0) {
+          listContainer.innerHTML = `
+            <div class="empty-state" id="empty-state-view">
+              <div class="empty-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+              </div>
+              <h3 class="empty-title">No hay tareas en esta vista</h3>
+              <p class="empty-desc">Crea una nueva tarea con el formulario superior o ajusta los filtros seleccionados.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        const html = filtered.map(task => {
+          const isOverdue = task.dueDate && task.dueDate < todayStr && !task.completed;
+          const catInfo = CATEGORY_MAP[task.category] || { color: 'var(--accent)', label: task.category || 'General' };
+
+          // Prioridades
+          let prioLabel = 'Media';
+          let prioColor = 'var(--prio-media)';
+          let prioBg = 'rgba(245, 158, 11, 0.15)';
+
+          if (task.priority === 'alta') {
+            prioLabel = 'Alta';
+            prioColor = 'var(--prio-alta)';
+            prioBg = 'rgba(239, 68, 68, 0.15)';
+          } else if (task.priority === 'baja') {
+            prioLabel = 'Baja';
+            prioColor = 'var(--prio-baja)';
+            prioBg = 'rgba(16, 185, 129, 0.15)';
+          }
+
+          return `
+            <article class="task-item ${task.completed ? 'completed' : ''}" id="task-item-${task.id}" data-id="${task.id}">
+              <!-- Checkbox -->
+              <button 
+                class="custom-checkbox" 
+                onclick="window.TaskFlowApp.toggleTask('${task.id}')"
+                aria-label="${task.completed ? 'Marcar como pendiente' : 'Marcar como completada'}"
+                title="${task.completed ? 'Desmarcar' : 'Completar'}"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+
+              <!-- Texto y Metadatos -->
+              <div class="task-content">
+                <div class="task-title">${escapeHTML(task.title)}</div>
+                <div class="task-meta">
+                  <span class="meta-tag tag-category" style="--cat-color: ${catInfo.color}">
+                    ${escapeHTML(catInfo.label)}
+                  </span>
+                  <span class="meta-tag tag-priority" style="--prio-color: ${prioColor}; --prio-bg: ${prioBg}">
+                    ${prioLabel}
+                  </span>
+                  ${task.dueDate ? `
+                    <span class="tag-due ${isOverdue ? 'overdue' : ''}" title="Fecha límite">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      ${task.dueDate}${isOverdue ? ' (Vencida)' : ''}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="task-actions">
+                <button 
+                  class="action-btn" 
+                  onclick="window.TaskFlowApp.openEditTask('${task.id}')" 
+                  title="Editar tarea"
+                  aria-label="Editar tarea"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button 
+                  class="action-btn btn-delete" 
+                  onclick="window.TaskFlowApp.deleteTask('${task.id}')" 
+                  title="Eliminar tarea"
+                  aria-label="Eliminar tarea"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        listContainer.innerHTML = html;
+      }
+
+      /**
+       * Helper para escapar caracteres HTML peligrosos
+       */
+      function escapeHTML(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      /**
+       * Notificaciones Toast
+       */
+      function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        let iconSvg = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        `;
+
+        if (type === 'success') {
+          iconSvg = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--prio-baja)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          `;
+        } else if (type === 'error') {
+          iconSvg = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--prio-alta)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          `;
+        }
+
+        toast.innerHTML = `${iconSvg}<span>${escapeHTML(message)}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+          toast.style.transition = 'all 200ms ease';
+          setTimeout(() => toast.remove(), 200);
+        }, 3200);
+      }
+
+      /**
+       * Apertura y cierre de modales
+       */
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add('active');
+          const firstInput = modal.querySelector('input:not([type="hidden"]), select');
+          if (firstInput) setTimeout(() => firstInput.focus(), 50);
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.remove('active');
+        }
+      }
+
+      // Auto-arranque al cargar el DOM
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+      // API Pública
+      return {
+        handleAddTask,
+        toggleTask,
+        deleteTask,
+        openEditTask,
+        saveEditedTask,
+        setFilter,
+        setCategoryFilter,
+        handleSearch,
+        handleSortChange,
+        exportTasksJSON,
+        handleImportFile,
+        openModal,
+        closeModal
+      };
+    })();
+  </script>
+</body>
+</html>
