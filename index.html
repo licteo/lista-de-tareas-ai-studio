@@ -411,6 +411,239 @@
       cursor: pointer;
     }
 
+    /* Recordatorios y Presets */
+    .reminder-control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    .reminder-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .reminder-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .preset-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+    }
+
+    .preset-chip {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .preset-chip:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Barra / Estado de Notificaciones */
+    .notification-status-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+      box-shadow: var(--card-shadow);
+      transition: all var(--transition-base);
+    }
+
+    .notification-status-bar.needs-permission {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%);
+      border-color: rgba(99, 102, 241, 0.35);
+    }
+
+    .notif-info-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .notif-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .notif-dot.granted {
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .notif-dot.default {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .notif-dot.denied {
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+    }
+
+    .notif-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-notif-action {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .btn-notif-action:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-test-alarm {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .btn-test-alarm:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* Etiqueta de Recordatorio en Lista de Tareas */
+    .tag-reminder {
+      background: rgba(99, 102, 241, 0.14);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+    }
+
+    .tag-reminder.ringing {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-color: #ef4444;
+      animation: pulseAlarm 1.2s infinite;
+    }
+
+    .tag-reminder.due-soon {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .tag-reminder.past {
+      background: var(--tag-bg);
+      color: var(--text-subtle);
+      border-color: var(--border-color);
+      opacity: 0.75;
+    }
+
+    @keyframes pulseAlarm {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { transform: scale(1.03); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* Modal de Alarma Activa */
+    .alarm-modal-card {
+      border: 2px solid #6366f1;
+      box-shadow: 0 0 35px rgba(99, 102, 241, 0.35);
+      animation: alarmBounce 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes alarmBounce {
+      from { transform: scale(0.8) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .alarm-hero-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: var(--accent-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+      animation: bellShake 0.8s infinite;
+    }
+
+    @keyframes bellShake {
+      0%, 100% { transform: rotate(0); }
+      20%, 60% { transform: rotate(12deg); }
+      40%, 80% { transform: rotate(-12deg); }
+    }
+
+    .snooze-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
     /* ==========================================================================
        FILTROS, BÚSQUEDA Y CATEGORÍAS
        ========================================================================== */
@@ -1057,6 +1290,29 @@
       </div>
     </header>
 
+    <!-- BARRA / ESTADO DE PERMISO DE NOTIFICACIONES -->
+    <div class="notification-status-bar" id="notification-status-bar">
+      <div class="notif-info-wrap">
+        <span class="notif-dot default" id="notif-status-dot" title="Estado de permisos de notificación"></span>
+        <span id="notif-status-text">Recordatorios: Notificaciones pendientes de activación</span>
+      </div>
+      <div class="notif-actions">
+        <button class="btn-test-alarm" id="btn-quick-test-alarm" onclick="window.TaskFlowApp.triggerQuickTest(5)" title="Crear una tarea de prueba que sonará en 5 segundos">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Probar alarma (5s)</span>
+        </button>
+        <button class="btn-notif-action" id="btn-request-notif" onclick="window.TaskFlowApp.requestNotificationPermission()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span id="btn-request-notif-text">Activar Notificaciones</span>
+        </button>
+      </div>
+    </div>
+
     <!-- RESUMEN / DASHBOARD DE MÉTRICAS -->
     <section class="dashboard-stats" aria-label="Métricas de tareas">
       <div class="stat-card" id="stat-card-total">
@@ -1123,8 +1379,35 @@
             <option value="baja">🟢 Prioridad Baja</option>
           </select>
 
-          <!-- Fecha Límite -->
+          <!-- Fecha Límite Opcional -->
           <input type="date" id="input-task-due" class="date-input" title="Fecha límite opcional" />
+        </div>
+
+        <!-- Grupo de Recordatorio con Hora Específica -->
+        <div class="reminder-control-group">
+          <div class="reminder-input-row">
+            <span class="reminder-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              Hora del recordatorio:
+            </span>
+            <input 
+              type="datetime-local" 
+              id="input-task-reminder" 
+              class="date-input" 
+              title="Define fecha y hora exacta para disparar la alarma y notificación" 
+            />
+          </div>
+          <div class="preset-chips-row">
+            <span style="font-size: 0.7rem; color: var(--text-subtle); margin-right: 0.2rem;">Atajos:</span>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetMinutes('input-task-reminder', 5)">⏱️ +5 min</button>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetMinutes('input-task-reminder', 15)">⏱️ +15 min</button>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetMinutes('input-task-reminder', 60)">🕒 +1 hora</button>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetTomorrow('input-task-reminder', 9)">🌅 Mañana 09:00</button>
+            <button type="button" class="preset-chip" onclick="document.getElementById('input-task-reminder').value=''" title="Quitar hora de recordatorio">🧹 Sin alarma</button>
+          </div>
         </div>
       </form>
     </section>
@@ -1147,6 +1430,7 @@
           />
         </div>
         <select id="select-sort-order" class="select-custom" onchange="window.TaskFlowApp.handleSortChange(this.value)" title="Ordenar Tareas">
+          <option value="reminder-asc">⏰ Próximos recordatorios</option>
           <option value="created-desc">🕒 Más recientes</option>
           <option value="created-asc">⏳ Más antiguas</option>
           <option value="due-date">📅 Fecha límite</option>
@@ -1162,6 +1446,9 @@
         </button>
         <button class="filter-pill" data-filter="pending" onclick="window.TaskFlowApp.setFilter('pending')">
           Pendientes <span class="badge-count" id="badge-count-pending">0</span>
+        </button>
+        <button class="filter-pill" data-filter="with-reminder" onclick="window.TaskFlowApp.setFilter('with-reminder')">
+          ⏰ Con Alarma <span class="badge-count" id="badge-count-reminders">0</span>
         </button>
         <button class="filter-pill" data-filter="completed" onclick="window.TaskFlowApp.setFilter('completed')">
           Completadas <span class="badge-count" id="badge-count-completed">0</span>
@@ -1244,10 +1531,80 @@
           <label class="form-label" for="edit-task-due">Fecha Límite</label>
           <input type="date" id="edit-task-due" class="date-input" />
         </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-task-reminder">
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              Hora de Recordatorio (Alarma con Notificación)
+            </span>
+          </label>
+          <input type="datetime-local" id="edit-task-reminder" class="date-input" />
+          <div class="preset-chips-row" style="margin-top: 0.35rem;">
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetMinutes('edit-task-reminder', 5)">⏱️ +5m</button>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetMinutes('edit-task-reminder', 15)">⏱️ +15m</button>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetMinutes('edit-task-reminder', 60)">🕒 +1h</button>
+            <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetTomorrow('edit-task-reminder', 9)">🌅 Mañana 9am</button>
+            <button type="button" class="preset-chip" onclick="document.getElementById('edit-task-reminder').value=''">🧹 Sin recordatorio</button>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn-secondary" onclick="window.TaskFlowApp.closeModal('modal-edit-task')">Cancelar</button>
         <button class="btn-submit" onclick="window.TaskFlowApp.saveEditedTask()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL DE ALERTA DE RECORDATORIO (ALARMA SONANDO)
+       ========================================================================== -->
+  <div class="modal-overlay" id="modal-alarm-alert" role="dialog" aria-modal="true" aria-labelledby="alarm-modal-title">
+    <div class="modal-card alarm-modal-card">
+      <div class="alarm-hero-icon" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </div>
+
+      <div style="text-align: center; display: flex; flex-direction: column; gap: 0.35rem;">
+        <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.08em; color: #ef4444;">
+          ¡Hora del recordatorio cumplida!
+        </span>
+        <h2 class="modal-title" id="alarm-task-title" style="font-size: 1.35rem; line-height: 1.3;">
+          Título de la tarea
+        </h2>
+        <div id="alarm-task-meta" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 0.25rem; font-size: 0.8rem; color: var(--text-muted);">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
+        <button class="btn-submit" style="justify-content: center; width: 100%; padding: 0.85rem;" onclick="window.TaskFlowApp.handleAlarmComplete()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Marcar como completada</span>
+        </button>
+
+        <div class="snooze-buttons-row">
+          <button class="btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 0.8rem;" onclick="window.TaskFlowApp.handleAlarmSnooze(5)">
+            💤 Posponer 5 min
+          </button>
+          <button class="btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 0.8rem;" onclick="window.TaskFlowApp.handleAlarmSnooze(15)">
+            ⏱️ Posponer 15 min
+          </button>
+          <button class="btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 0.8rem;" onclick="window.TaskFlowApp.handleAlarmSnooze(60)">
+            🕒 Posponer 1 hora
+          </button>
+        </div>
+
+        <button class="action-btn" style="width: 100%; height: auto; padding: 0.5rem; margin-top: 0.25rem; font-size: 0.8rem;" onclick="window.TaskFlowApp.closeModal('modal-alarm-alert')">
+          Descartar alarma
+        </button>
       </div>
     </div>
   </div>
@@ -1369,55 +1726,87 @@
         'Parqueadero': { color: 'var(--cat-otro)', label: 'Parqueadero' }
       };
 
-      // Tareas de demostración iniciales
+      // Tareas de demostración iniciales con recordatorios
+      const nowMs = Date.now();
+      const inTenMins = new Date(nowMs + 10 * 60 * 1000);
+      const tomorrowNine = new Date(nowMs + 24 * 60 * 60 * 1000);
+      tomorrowNine.setHours(9, 0, 0, 0);
+
       const INITIAL_TASKS = [
         {
           id: 'demo-1',
-          title: 'Explorar las funciones de TaskFlow PWA',
+          title: 'Pagar la factura de servicios y confirmar comprobante',
           category: 'Personal',
           priority: 'alta',
-          dueDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+          dueDate: new Date(nowMs + 86400000).toISOString().split('T')[0],
+          reminderTime: formatToDatetimeLocal(inTenMins),
+          reminderTriggered: false,
           completed: false,
-          createdAt: Date.now() - 3600000
+          createdAt: nowMs - 3600000
         },
         {
           id: 'demo-2',
-          title: 'Exportar respaldo en formato JSON',
+          title: 'Revisión y exportación del informe mensual',
           category: 'Trabajo',
           priority: 'media',
-          dueDate: '',
+          dueDate: new Date(nowMs + 172800000).toISOString().split('T')[0],
+          reminderTime: formatToDatetimeLocal(tomorrowNine),
+          reminderTriggered: false,
           completed: false,
-          createdAt: Date.now() - 7200000
+          createdAt: nowMs - 7200000
         },
         {
           id: 'demo-3',
           title: 'Renovar boleto mensual de parqueadero',
           category: 'Parqueadero',
           priority: 'alta',
-          dueDate: new Date(Date.now() + 172800000).toISOString().split('T')[0],
+          dueDate: new Date(nowMs + 259200000).toISOString().split('T')[0],
+          reminderTime: '',
+          reminderTriggered: false,
           completed: false,
-          createdAt: Date.now() - 10800000
+          createdAt: nowMs - 10800000
         },
         {
           id: 'demo-4',
-          title: 'Instalar la aplicación como PWA en mi pantalla de inicio',
+          title: 'Instalar la aplicación como PWA en pantalla de inicio',
           category: 'Estudio',
           priority: 'baja',
           dueDate: '',
+          reminderTime: '',
+          reminderTriggered: false,
           completed: true,
-          createdAt: Date.now() - 14400000
+          createdAt: nowMs - 14400000
         }
       ];
 
       // Estado reactivo de la aplicación
       let state = {
         tasks: [],
-        filter: 'all',          // 'all' | 'pending' | 'completed'
+        filter: 'all',          // 'all' | 'pending' | 'with-reminder' | 'completed'
         categoryFilter: 'all',  // 'all' | 'Trabajo' | ...
         searchQuery: '',
-        sortBy: 'created-desc', // 'created-desc' | 'created-asc' | 'due-date' | 'priority' | 'alpha'
-        theme: 'dark'
+        sortBy: 'created-desc', // 'created-desc' | 'created-asc' | 'reminder-asc' | 'due-date' | 'priority' | 'alpha'
+        theme: 'dark',
+        activeAlarmTaskId: null
       };
+
+      let audioCtx = null;
+      let reminderIntervalId = null;
+
+      /**
+       * Helper para formatear objeto Date a formato ISO local (YYYY-MM-DDTHH:mm)
+       */
+      function formatToDatetimeLocal(dateObj) {
+        if (!dateObj || isNaN(new Date(dateObj).getTime())) return '';
+        const d = new Date(dateObj);
+        const pad = (n) => String(n).padStart(2, '0');
+        const year = d.getFullYear();
+        const month = pad(d.getMonth() + 1);
+        const day = pad(d.getDate());
+        const hours = pad(d.getHours());
+        const minutes = pad(d.getMinutes());
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
 
       /**
        * Inicialización de la aplicación
@@ -1427,6 +1816,8 @@
         loadTasks();
         render();
         setupEventListeners();
+        updateNotificationPermissionUI();
+        startReminderEngine();
       }
 
       /**
@@ -1450,6 +1841,7 @@
           if (e.key === 'Escape') {
             closeModal('modal-edit-task');
             closeModal('modal-backup');
+            closeModal('modal-alarm-alert');
           }
         });
 
@@ -1461,6 +1853,306 @@
             }
           });
         });
+      }
+
+      /**
+       * SINTETIZADOR DE AUDIO WEB (Chime Melódico)
+       * Genera un acorde armónico sin depender de archivos de audio externos.
+       */
+      function playChimeSound() {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          
+          if (!audioCtx) {
+            audioCtx = new AudioContextClass();
+          }
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+
+          const now = audioCtx.currentTime;
+          // Melodía tipo campana / recordatorio (C5, E5, G5, C6)
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          
+          notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+
+            gain.gain.setValueAtTime(0.001, now + idx * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.3, now + idx * 0.12 + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.12 + 0.65);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now + idx * 0.12);
+            osc.stop(now + idx * 0.12 + 0.7);
+          });
+        } catch (e) {
+          console.warn('AudioContext no disponible:', e);
+        }
+      }
+
+      /**
+       * GESTIÓN DE PERMISOS DE NOTIFICACIONES
+       */
+      function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+          showToast('Tu navegador no soporta la API de Notificaciones', 'error');
+          return;
+        }
+
+        // Desbloquear AudioContext en la interacción
+        playChimeSound();
+
+        Notification.requestPermission().then((permission) => {
+          updateNotificationPermissionUI();
+          if (permission === 'granted') {
+            showToast('¡Notificaciones activadas con éxito!', 'success');
+            // Enviar notificación de bienvenida / confirmación
+            sendBrowserNotification(
+              '🔔 ¡TaskFlow Notificaciones Activas!', 
+              'Recibirás recordatorios con alarma en la hora exacta que configures para tus tareas.'
+            );
+          } else if (permission === 'denied') {
+            showToast('Permiso de notificaciones bloqueado por el navegador', 'error');
+          }
+        }).catch((err) => {
+          console.error('Error al pedir permisos:', err);
+        });
+      }
+
+      function updateNotificationPermissionUI() {
+        const dot = document.getElementById('notif-status-dot');
+        const text = document.getElementById('notif-status-text');
+        const btn = document.getElementById('btn-request-notif');
+        const btnText = document.getElementById('btn-request-notif-text');
+        const bar = document.getElementById('notification-status-bar');
+
+        if (!('Notification' in window)) {
+          if (dot) dot.className = 'notif-dot denied';
+          if (text) text.textContent = 'Notificaciones: No soportadas en este navegador';
+          if (btn) btn.style.display = 'none';
+          return;
+        }
+
+        const perm = Notification.permission;
+
+        if (perm === 'granted') {
+          if (dot) dot.className = 'notif-dot granted';
+          if (text) text.innerHTML = '🔔 <strong>Recordatorios activos:</strong> Notificaciones del navegador habilitadas';
+          if (btnText) btnText.textContent = 'Notificaciones OK';
+          if (btn) {
+            btn.style.background = 'var(--bg-subtle)';
+            btn.style.color = 'var(--prio-baja)';
+            btn.style.border = '1px solid var(--border-color)';
+            btn.title = 'Permiso ya otorgado';
+          }
+          if (bar) bar.classList.remove('needs-permission');
+        } else if (perm === 'denied') {
+          if (dot) dot.className = 'notif-dot denied';
+          if (text) text.textContent = 'Recordatorios: Notificaciones bloqueadas en los ajustes del navegador';
+          if (btnText) btnText.textContent = 'Permiso Denegado';
+          if (btn) {
+            btn.style.background = 'rgba(239, 68, 68, 0.2)';
+            btn.style.color = '#ef4444';
+          }
+          if (bar) bar.classList.add('needs-permission');
+        } else {
+          // Default
+          if (dot) dot.className = 'notif-dot default';
+          if (text) text.textContent = 'Activa las notificaciones para que tus alarmas suenen a tiempo';
+          if (btnText) btnText.textContent = 'Activar Notificaciones';
+          if (bar) bar.classList.add('needs-permission');
+        }
+      }
+
+      function sendBrowserNotification(title, body, tag = 'taskflow-alert') {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try {
+            const notif = new Notification(title, {
+              body: body,
+              icon: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%236366f1"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>',
+              tag: tag,
+              requireInteraction: true,
+              silent: false
+            });
+
+            notif.onclick = function () {
+              window.focus();
+              notif.close();
+            };
+          } catch (e) {
+            console.warn('Error al disparar notificación:', e);
+          }
+        }
+      }
+
+      /**
+       * MOTOR DE VIGILANCIA DE RECORDATORIOS (Se ejecuta cada segundo)
+       */
+      function startReminderEngine() {
+        if (reminderIntervalId) clearInterval(reminderIntervalId);
+        
+        reminderIntervalId = setInterval(checkDueReminders, 1000);
+      }
+
+      function checkDueReminders() {
+        const now = Date.now();
+        let changed = false;
+
+        state.tasks.forEach(task => {
+          if (!task.reminderTime || task.completed || task.reminderTriggered) {
+            return;
+          }
+
+          const reminderTimestamp = new Date(task.reminderTime).getTime();
+          if (isNaN(reminderTimestamp)) return;
+
+          // Si el tiempo ya llegó o pasó (con un margen de 1 segundo)
+          if (now >= reminderTimestamp) {
+            task.reminderTriggered = true;
+            changed = true;
+            triggerAlarmForTask(task);
+          }
+        });
+
+        if (changed) {
+          saveTasks();
+          render();
+        }
+      }
+
+      /**
+       * DISPARAR ALARMA Y NOTIFICACIÓN PARA UNA TAREA
+       */
+      function triggerAlarmForTask(task) {
+        // 1. Sonido
+        playChimeSound();
+
+        // 2. Vibración móvil si está disponible
+        if ('vibrate' in navigator) {
+          try {
+            navigator.vibrate([200, 100, 200, 100, 200]);
+          } catch (e) {}
+        }
+
+        // 3. Notificación del Navegador
+        const timeFormatted = new Date(task.reminderTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        sendBrowserNotification(
+          `⏰ ¡Alarma: ${task.title}!`,
+          `Categoría: ${task.category} • Prioridad: ${task.priority.toUpperCase()}\nHora programada: ${timeFormatted}`,
+          `reminder-${task.id}`
+        );
+
+        // 4. Modal en pantalla
+        state.activeAlarmTaskId = task.id;
+        const alarmTitleEl = document.getElementById('alarm-task-title');
+        const alarmMetaEl = document.getElementById('alarm-task-meta');
+
+        if (alarmTitleEl) alarmTitleEl.textContent = task.title;
+        if (alarmMetaEl) {
+          alarmMetaEl.innerHTML = `
+            <span>🏷️ ${escapeHTML(task.category)}</span>
+            <span>•</span>
+            <span>🔥 Prioridad ${escapeHTML(task.priority)}</span>
+            <span>•</span>
+            <span>⏰ ${timeFormatted}</span>
+          `;
+        }
+
+        openModal('modal-alarm-alert');
+        showToast(`⏰ ¡Alarma activa: "${task.title}"!`, 'error');
+      }
+
+      /**
+       * Acciones del Modal de Alarma
+       */
+      function handleAlarmComplete() {
+        if (!state.activeAlarmTaskId) {
+          closeModal('modal-alarm-alert');
+          return;
+        }
+        toggleTask(state.activeAlarmTaskId);
+        closeModal('modal-alarm-alert');
+        state.activeAlarmTaskId = null;
+      }
+
+      function handleAlarmSnooze(minutes) {
+        if (!state.activeAlarmTaskId) {
+          closeModal('modal-alarm-alert');
+          return;
+        }
+        snoozeTask(state.activeAlarmTaskId, minutes);
+        closeModal('modal-alarm-alert');
+        state.activeAlarmTaskId = null;
+      }
+
+      function snoozeTask(taskId, minutes) {
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        const newTime = new Date(Date.now() + minutes * 60 * 1000);
+        task.reminderTime = formatToDatetimeLocal(newTime);
+        task.reminderTriggered = false;
+        
+        saveTasks();
+        render();
+        showToast(`Alarma pospuesta ${minutes} minutos (${newTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`, 'info');
+      }
+
+      /**
+       * Helpers de Presets para Formulario
+       */
+      function setFormPresetMinutes(inputId, minutes) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const target = new Date(Date.now() + minutes * 60 * 1000);
+        input.value = formatToDatetimeLocal(target);
+        showToast(`Recordatorio fijado en +${minutes} min (${target.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`, 'info');
+      }
+
+      function setFormPresetTomorrow(inputId, hour = 9) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(hour, 0, 0, 0);
+        input.value = formatToDatetimeLocal(tomorrow);
+        showToast(`Recordatorio fijado para mañana a las 09:00 AM`, 'info');
+      }
+
+      /**
+       * Test rápido en 5 segundos
+       */
+      function triggerQuickTest(seconds = 5) {
+        // Pedir permiso si no está otorgado
+        if ('Notification' in window && Notification.permission === 'default') {
+          requestNotificationPermission();
+        }
+
+        const testTime = new Date(Date.now() + seconds * 1000);
+        const testTask = {
+          id: 'test-' + Date.now(),
+          title: '🔔 Prueba de alarma y notificación en vivo',
+          category: 'Urgente',
+          priority: 'alta',
+          dueDate: '',
+          reminderTime: formatToDatetimeLocal(testTime),
+          reminderTriggered: false,
+          completed: false,
+          createdAt: Date.now()
+        };
+
+        state.tasks.unshift(testTask);
+        saveTasks();
+        render();
+
+        showToast(`⚡ Alarma de prueba creada. Sonará en ${seconds} segundos...`, 'info');
       }
 
       /**
@@ -1533,9 +2225,17 @@
         const catSelect = document.getElementById('select-task-category');
         const prioSelect = document.getElementById('select-task-priority');
         const dueInput = document.getElementById('input-task-due');
+        const reminderInput = document.getElementById('input-task-reminder');
 
         const title = titleInput.value.trim();
         if (!title) return;
+
+        const reminderVal = reminderInput ? reminderInput.value : '';
+
+        // Si tiene recordatorio y no tiene permisos de notificación, solicitar amigablemente
+        if (reminderVal && 'Notification' in window && Notification.permission === 'default') {
+          requestNotificationPermission();
+        }
 
         const newTask = {
           id: 'task-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
@@ -1543,6 +2243,8 @@
           category: catSelect ? catSelect.value : 'Personal',
           priority: prioSelect ? prioSelect.value : 'media',
           dueDate: dueInput ? dueInput.value : '',
+          reminderTime: reminderVal,
+          reminderTriggered: false,
           completed: false,
           createdAt: Date.now()
         };
@@ -1554,9 +2256,15 @@
         // Limpiar inputs
         titleInput.value = '';
         if (dueInput) dueInput.value = '';
+        if (reminderInput) reminderInput.value = '';
         titleInput.focus();
 
-        showToast('Tarea agregada exitosamente', 'success');
+        if (reminderVal) {
+          const remDate = new Date(reminderVal);
+          showToast(`Tarea guardada con alarma para ${remDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 'success');
+        } else {
+          showToast('Tarea agregada exitosamente', 'success');
+        }
       }
 
       /**
@@ -1566,6 +2274,9 @@
         const task = state.tasks.find(t => t.id === id);
         if (task) {
           task.completed = !task.completed;
+          if (task.completed) {
+            task.reminderTriggered = true; // Desactivar alarmas si se completa
+          }
           saveTasks();
           render();
           if (task.completed) {
@@ -1580,7 +2291,7 @@
       function deleteTask(id) {
         const index = state.tasks.findIndex(t => t.id === id);
         if (index !== -1) {
-          const removed = state.tasks.splice(index, 1)[0];
+          state.tasks.splice(index, 1);
           saveTasks();
           render();
           showToast(`Tarea eliminada`, 'info');
@@ -1599,6 +2310,7 @@
         document.getElementById('edit-task-category').value = task.category || 'Personal';
         document.getElementById('edit-task-priority').value = task.priority || 'media';
         document.getElementById('edit-task-due').value = task.dueDate || '';
+        document.getElementById('edit-task-reminder').value = task.reminderTime || '';
 
         openModal('modal-edit-task');
       }
@@ -1617,10 +2329,19 @@
           return;
         }
 
+        const prevReminder = task.reminderTime;
+        const newReminder = document.getElementById('edit-task-reminder').value;
+
         task.title = newTitle;
         task.category = document.getElementById('edit-task-category').value;
         task.priority = document.getElementById('edit-task-priority').value;
         task.dueDate = document.getElementById('edit-task-due').value;
+        task.reminderTime = newReminder;
+        
+        // Si se cambió o reprogramó el recordatorio, resetear el flag triggered
+        if (newReminder && newReminder !== prevReminder) {
+          task.reminderTriggered = false;
+        }
 
         saveTasks();
         render();
@@ -1666,13 +2387,62 @@
       }
 
       /**
+       * Formateo legible de etiquetas de recordatorio
+       */
+      function formatReminderLabel(reminderStr, isTriggered, isCompleted) {
+        if (!reminderStr) return null;
+        const remDate = new Date(reminderStr);
+        if (isNaN(remDate.getTime())) return null;
+
+        const now = Date.now();
+        const diffMs = remDate.getTime() - now;
+        const diffMins = Math.round(diffMs / 60000);
+
+        const timeStr = remDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = remDate.toLocaleDateString([], { day: '2-digit', month: 'short' });
+
+        if (isCompleted) {
+          return { text: `⏰ ${timeStr}`, statusClass: 'past', tooltip: `Alarma programada: ${dateStr} ${timeStr}` };
+        }
+
+        if (isTriggered) {
+          return { text: `🚨 ¡Alarma disparada (${timeStr})!`, statusClass: 'ringing', tooltip: `La alarma sonó a las ${timeStr}` };
+        }
+
+        if (diffMs <= 0) {
+          return { text: `⚠️ Alarma vencida (${timeStr})`, statusClass: 'ringing', tooltip: `Debió sonar a las ${timeStr}` };
+        }
+
+        if (diffMins <= 5) {
+          return { text: `⏰ ¡En ${diffMins} min (${timeStr})!`, statusClass: 'due-soon', tooltip: `Alarma inminente a las ${timeStr}` };
+        }
+
+        if (diffMins < 60) {
+          return { text: `⏰ En ${diffMins} min`, statusClass: '', tooltip: `Alarma a las ${timeStr}` };
+        }
+
+        const isToday = new Date().toDateString() === remDate.toDateString();
+        if (isToday) {
+          return { text: `⏰ Hoy ${timeStr}`, statusClass: '', tooltip: `Alarma programada hoy a las ${timeStr}` };
+        }
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        if (tomorrow.toDateString() === remDate.toDateString()) {
+          return { text: `⏰ Mañana ${timeStr}`, statusClass: '', tooltip: `Alarma programada mañana a las ${timeStr}` };
+        }
+
+        return { text: `⏰ ${dateStr} ${timeStr}`, statusClass: '', tooltip: `Alarma programada para ${dateStr} ${timeStr}` };
+      }
+
+      /**
        * Persistencia Dual: Exportar a archivo JSON
        */
       function exportTasksJSON() {
         try {
           const exportData = {
             appName: 'TaskFlow PWA',
-            version: '1.0',
+            version: '1.1',
             exportedAt: new Date().toISOString(),
             totalTasks: state.tasks.length,
             tasks: state.tasks
@@ -1720,25 +2490,26 @@
               throw new Error('El archivo no contiene un formato de tareas válido.');
             }
 
-            // Normalización y validación mínima
+            // Normalización y validación
             const validTasks = importedTasks.map((t, idx) => ({
               id: t.id || 'imp-' + Date.now() + '-' + idx,
               title: String(t.title || 'Tarea sin título'),
               category: t.category || 'Personal',
               priority: ['alta', 'media', 'baja'].includes(t.priority) ? t.priority : 'media',
               dueDate: t.dueDate || '',
+              reminderTime: t.reminderTime || '',
+              reminderTriggered: Boolean(t.reminderTriggered),
               completed: Boolean(t.completed),
               createdAt: t.createdAt || Date.now()
             }));
 
-            // Combinar o reemplazar (reemplazamos con los datos importados)
             state.tasks = validTasks;
             saveTasks();
             render();
 
             closeModal('modal-backup');
             showToast(`${validTasks.length} tareas importadas con éxito`, 'success');
-            event.target.value = ''; // Reset input
+            event.target.value = '';
           } catch (err) {
             console.error('Error al importar:', err);
             showToast('Formato JSON no válido o corrupto', 'error');
@@ -1754,6 +2525,7 @@
       function render() {
         const totalCount = state.tasks.length;
         const pendingCount = state.tasks.filter(t => !t.completed).length;
+        const reminderCount = state.tasks.filter(t => Boolean(t.reminderTime) && !t.completed).length;
         const completedCount = totalCount - pendingCount;
         const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -1768,9 +2540,11 @@
         // Actualizar Badges de Filtro
         const bAll = document.getElementById('badge-count-all');
         const bPend = document.getElementById('badge-count-pending');
+        const bRem = document.getElementById('badge-count-reminders');
         const bComp = document.getElementById('badge-count-completed');
         if (bAll) bAll.textContent = totalCount;
         if (bPend) bPend.textContent = pendingCount;
+        if (bRem) bRem.textContent = reminderCount;
         if (bComp) bComp.textContent = completedCount;
 
         // Barra de Progreso
@@ -1784,6 +2558,7 @@
           // Filtro por Estado
           if (state.filter === 'pending' && task.completed) return false;
           if (state.filter === 'completed' && !task.completed) return false;
+          if (state.filter === 'with-reminder' && (!task.reminderTime || task.completed)) return false;
 
           // Filtro por Categoría
           if (state.categoryFilter !== 'all' && task.category !== state.categoryFilter) return false;
@@ -1800,6 +2575,11 @@
 
         // Ordenamiento
         filtered.sort((a, b) => {
+          if (state.sortBy === 'reminder-asc') {
+            if (!a.reminderTime) return 1;
+            if (!b.reminderTime) return -1;
+            return new Date(a.reminderTime).getTime() - new Date(b.reminderTime).getTime();
+          }
           if (state.sortBy === 'created-desc') return (b.createdAt || 0) - (a.createdAt || 0);
           if (state.sortBy === 'created-asc') return (a.createdAt || 0) - (b.createdAt || 0);
           if (state.sortBy === 'alpha') return a.title.localeCompare(b.title);
@@ -1841,6 +2621,9 @@
           const isOverdue = task.dueDate && task.dueDate < todayStr && !task.completed;
           const catInfo = CATEGORY_MAP[task.category] || { color: 'var(--accent)', label: task.category || 'General' };
 
+          // Datos de Recordatorio
+          const reminderMeta = formatReminderLabel(task.reminderTime, task.reminderTriggered, task.completed);
+
           // Prioridades
           let prioLabel = 'Media';
           let prioColor = 'var(--prio-media)';
@@ -1880,6 +2663,11 @@
                   <span class="meta-tag tag-priority" style="--prio-color: ${prioColor}; --prio-bg: ${prioBg}">
                     ${prioLabel}
                   </span>
+                  ${reminderMeta ? `
+                    <span class="tag-reminder ${reminderMeta.statusClass}" title="${reminderMeta.tooltip}">
+                      ${reminderMeta.text}
+                    </span>
+                  ` : ''}
                   ${task.dueDate ? `
                     <span class="tag-due ${isOverdue ? 'overdue' : ''}" title="Fecha límite">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1896,6 +2684,19 @@
 
               <!-- Botones de Acción -->
               <div class="task-actions">
+                ${task.reminderTime && !task.completed ? `
+                  <button 
+                    class="action-btn" 
+                    onclick="window.TaskFlowApp.snoozeTask('${task.id}', 10)" 
+                    title="Posponer alarma 10 minutos"
+                    aria-label="Posponer alarma 10 minutos"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </button>
+                ` : ''}
                 <button 
                   class="action-btn" 
                   onclick="window.TaskFlowApp.openEditTask('${task.id}')" 
@@ -2022,6 +2823,13 @@
         setCategoryFilter,
         handleSearch,
         handleSortChange,
+        requestNotificationPermission,
+        triggerQuickTest,
+        setFormPresetMinutes,
+        setFormPresetTomorrow,
+        snoozeTask,
+        handleAlarmComplete,
+        handleAlarmSnooze,
         exportTasksJSON,
         handleImportFile,
         openModal,
@@ -2031,3 +2839,4 @@
   </script>
 </body>
 </html>
+
