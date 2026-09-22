@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#6366f1" />
-  <meta name="description" content="TaskFlow PWA - Aplicación progresiva de gestión de tareas 100% offline con persistencia dual." />
+  <meta name="description" content="Progressive Web App monolítica de tareas en un único archivo index.html lista para GitHub, con subtareas jerárquicas anidadas (sub-subtareas), autoguardado en tiempo real de notas y borradores, alarmas programadas, diseño responsive y persistencia dual offline." />
   <title>TaskFlow • Lista de Tareas PWA</title>
 
   <!-- PWA Manifest Embebido mediante Data URL -->
@@ -1202,40 +1202,625 @@
     }
 
     /* ==========================================================================
-       RESPONSIVE & MOBILE TWEAKS
+       SUBTAREAS (SUBTASKS) STYLES
        ========================================================================== */
+    .subtasks-section {
+      width: 100%;
+      margin-top: 0.65rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .subtasks-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .subtasks-progress-bar {
+      flex: 1;
+      max-width: 120px;
+      height: 5px;
+      background: var(--bg-subtle);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-left: auto;
+    }
+
+    .subtasks-progress-fill {
+      height: 100%;
+      background: var(--prio-baja);
+      border-radius: 999px;
+      transition: width var(--transition-spring);
+    }
+
+    .subtasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .subtask-node {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .subtask-row {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.6rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: all var(--transition-fast);
+    }
+
+    .subtask-row:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      background: var(--bg-card-hover);
+    }
+
+    .subtask-row.completed {
+      opacity: 0.65;
+    }
+
+    .subtask-row.completed .subtask-title {
+      text-decoration: line-through;
+      color: var(--text-subtle);
+    }
+
+    .subtask-checkbox {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      border: 1.5px solid var(--text-subtle);
+      border-radius: 5px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: white;
+      padding: 0;
+    }
+
+    .subtask-row:hover .subtask-checkbox,
+    .sub-subtask-item:hover .subtask-checkbox {
+      border-color: var(--accent);
+    }
+
+    .subtask-row.completed .subtask-checkbox,
+    .sub-subtask-item.completed .subtask-checkbox {
+      background: var(--prio-baja);
+      border-color: var(--prio-baja);
+    }
+
+    .subtask-title {
+      font-size: 0.84rem;
+      color: var(--text-main);
+      flex: 1;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    .subtask-child-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.12rem 0.4rem;
+      border-radius: 5px;
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--accent);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .subtask-action-btn-nested {
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.45rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .subtask-action-btn-nested:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .subtask-delete-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all var(--transition-fast);
+    }
+
+    .subtask-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    /* Subtareas Anidadas / Sub-subtareas */
+    .sub-nested-container {
+      margin-left: 1.15rem;
+      padding-left: 0.65rem;
+      border-left: 2px dashed rgba(99, 102, 241, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-top: 0.15rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .sub-subtask-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.55rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      transition: all var(--transition-fast);
+    }
+
+    .sub-subtask-item:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: var(--bg-card-hover);
+    }
+
+    .sub-subtask-item.completed {
+      opacity: 0.65;
+    }
+
+    .sub-subtask-item.completed .subtask-title {
+      text-decoration: line-through;
+      color: var(--text-subtle);
+    }
+
+    .child-add-row {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+      margin-top: 0.1rem;
+    }
+
+    .child-add-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px dashed var(--border-color);
+      border-radius: 6px;
+      padding: 0.3rem 0.55rem;
+      font-family: inherit;
+      font-size: 0.76rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .child-add-input:focus {
+      border-style: solid;
+      border-color: var(--border-focus);
+      background: var(--bg-surface);
+      box-shadow: 0 0 0 2px var(--accent-light);
+    }
+
+    .child-add-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .child-add-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .subtask-add-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      margin-top: 0.25rem;
+    }
+
+    .subtask-add-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .subtask-add-input:focus {
+      border-style: solid;
+      border-color: var(--border-focus);
+      background: var(--bg-surface);
+      box-shadow: 0 0 0 2px var(--accent-light);
+    }
+
+    .subtask-add-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .subtask-add-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* ==========================================================================
+       NOTAS ESCRITAS Y AUTOGUARDADO ("SE GUARDE LO ESCRITO")
+       ========================================================================== */
+    .task-desc-box {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--accent);
+      padding: 0.45rem 0.7rem;
+      border-radius: 8px;
+      margin-top: 0.2rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .textarea-notes {
+      width: 100%;
+      min-height: 54px;
+      resize: vertical;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .textarea-notes:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .textarea-notes::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .autosave-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      padding: 0 0.15rem;
+    }
+
+    .autosave-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+      color: var(--text-subtle);
+      transition: color var(--transition-fast);
+    }
+
+    .autosave-pill.saving {
+      color: var(--prio-media);
+    }
+
+    .autosave-pill.saved {
+      color: var(--prio-baja);
+    }
+
+    .autosave-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .draft-restored-banner {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 12px;
+      padding: 0.55rem 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      animation: taskFadeIn 200ms ease forwards;
+    }
+
+    .draft-restored-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .draft-restored-btn:hover {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    .creator-subtasks-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .draft-subtasks-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .draft-subtask-chip {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.74rem;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .draft-subtask-chip button {
+      background: none;
+      border: none;
+      color: var(--text-subtle);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      padding: 0;
+      transition: color var(--transition-fast);
+    }
+
+    .draft-subtask-chip button:hover {
+      color: #ef4444;
+    }
+
+    /* ==========================================================================
+       RESPONSIVE & MOBILE DESIGN (TODOS LOS DISPOSITIVOS)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      .app-container {
+        max-width: 100%;
+      }
+    }
+
     @media (max-width: 640px) {
       body {
-        padding: 0.75rem 0.75rem 2rem 0.75rem;
+        padding: 0.65rem 0.65rem 3rem 0.65rem;
+      }
+      .app-header {
+        padding: 0.65rem 0.85rem;
+        border-radius: 14px;
+      }
+      .brand-title {
+        font-size: 1.1rem;
+      }
+      .brand-logo {
+        width: 36px;
+        height: 36px;
+      }
+      .notification-status-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.6rem;
+      }
+      .notif-info-wrap {
+        font-size: 0.78rem;
+      }
+      .notif-actions {
+        width: 100%;
+        display: flex;
+        gap: 0.4rem;
+      }
+      .btn-notif-action, .btn-test-alarm {
+        flex: 1;
+        justify-content: center;
+        padding: 0.55rem;
+        font-size: 0.78rem;
+        min-height: 44px;
+      }
+      .dashboard-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.35rem;
+      }
+      .stat-card {
+        padding: 0.5rem 0.4rem;
+        text-align: center;
+        align-items: center;
+      }
+      .stat-label {
+        font-size: 0.68rem;
+      }
+      .stat-value {
+        font-size: 1.25rem;
+      }
+      .task-creator-box {
+        padding: 0.9rem;
+        border-radius: 14px;
+        gap: 0.75rem;
       }
       .input-main-row {
         flex-direction: column;
+        gap: 0.5rem;
+      }
+      .text-input {
+        padding: 0.75rem 0.85rem;
+        font-size: 0.95rem;
       }
       .btn-submit {
         justify-content: center;
         width: 100%;
+        padding: 0.8rem;
+        min-height: 44px;
       }
       .creator-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.45rem;
+      }
+      .creator-options input[type="date"] {
+        grid-column: span 2;
+      }
+      .select-custom, .date-input {
+        width: 100%;
+        min-height: 40px;
+        font-size: 0.82rem;
+      }
+      .reminder-input-row {
         flex-direction: column;
         align-items: stretch;
       }
-      .dashboard-stats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.4rem;
+      .preset-chips-row {
+        gap: 0.35rem;
       }
-      .stat-card {
-        padding: 0.6rem;
+      .preset-chip {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.65rem;
       }
-      .stat-value {
-        font-size: 1.25rem;
+      .search-sort-row {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .search-input {
+        min-height: 42px;
+      }
+      .task-item {
+        padding: 0.75rem 0.85rem;
+        gap: 0.65rem;
+        align-items: flex-start;
+      }
+      .custom-checkbox {
+        margin-top: 2px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+      }
+      .task-content {
+        gap: 0.35rem;
+      }
+      .task-actions {
+        margin-top: 2px;
+      }
+      .action-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
       }
       .backup-grid {
         grid-template-columns: 1fr;
       }
       .toast-container {
-        left: 1rem;
-        right: 1rem;
-        bottom: 1rem;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+      }
+      .modal-card {
+        padding: 1.15rem;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-footer {
+        flex-direction: column-reverse;
+      }
+      .modal-footer button {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .brand-title {
+        font-size: 1rem;
+      }
+      .pwa-pill {
+        display: none;
+      }
+      .creator-options {
+        grid-template-columns: 1fr;
+      }
+      .creator-options input[type="date"] {
+        grid-column: span 1;
+      }
+      .stat-value {
+        font-size: 1.15rem;
       }
     }
   </style>
@@ -1342,6 +1927,27 @@
 
     <!-- FORMULARIO CREACIÓN DE TAREAS -->
     <section class="task-creator-box" id="task-creator-box">
+      <!-- Indicador de Autoguardado en Vivo -->
+      <div class="autosave-status-row">
+        <span style="font-weight: 700; color: var(--text-main); font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Nueva Tarea
+        </span>
+        <span class="autosave-pill saved" id="autosave-pill" title="Lo que escribes se guarda automáticamente en tiempo real">
+          <span class="autosave-dot"></span>
+          <span id="autosave-text">Autoguardado activo</span>
+        </span>
+      </div>
+
+      <!-- Banner de Borrador Restaurado (si existe borrador sin enviar) -->
+      <div class="draft-restored-banner" id="draft-restored-banner" style="display: none;">
+        <span>✍️ <strong>Borrador recuperado:</strong> Se restauraron tus textos y apuntes sin guardar.</span>
+        <button type="button" class="draft-restored-btn" onclick="window.TaskFlowApp.clearFormDraft(true)" title="Descartar este borrador">Descartar</button>
+      </div>
+
       <form id="task-form" onsubmit="event.preventDefault(); window.TaskFlowApp.handleAddTask();">
         <div class="input-main-row">
           <input 
@@ -1359,6 +1965,41 @@
             </svg>
             <span>Agregar</span>
           </button>
+        </div>
+
+        <!-- Notas / Descripción Adicional ("Que se guarde lo escrito") -->
+        <div style="margin-top: 0.2rem;">
+          <textarea 
+            id="input-task-description" 
+            class="textarea-notes" 
+            rows="2" 
+            placeholder="Notas, apuntes o detalles adicionales (se guardan automáticamente)..." 
+            title="Notas o apuntes para la tarea (se guardan automáticamente)"
+          ></textarea>
+        </div>
+
+        <!-- Añadir Subtareas durante la Creación -->
+        <div class="creator-subtasks-wrapper">
+          <div style="display: flex; gap: 0.4rem; align-items: center;">
+            <input 
+              type="text" 
+              id="input-draft-subtask" 
+              class="text-input" 
+              style="padding: 0.45rem 0.75rem; font-size: 0.82rem;" 
+              placeholder="+ Añadir subtarea preliminar (Enter para agregar)..." 
+              onkeydown="if(event.key==='Enter'){event.preventDefault(); window.TaskFlowApp.addDraftSubtask();}"
+            />
+            <button 
+              type="button" 
+              class="btn-secondary" 
+              style="padding: 0.45rem 0.85rem; font-size: 0.8rem; white-space: nowrap; font-weight: 700;"
+              onclick="window.TaskFlowApp.addDraftSubtask()"
+            >
+              + Subtarea
+            </button>
+          </div>
+          <!-- Chips de subtareas pendientes de agregar -->
+          <div class="draft-subtasks-preview" id="draft-subtasks-container"></div>
         </div>
 
         <div class="creator-options">
@@ -1509,6 +2150,10 @@
           <input type="text" id="edit-task-title" class="text-input" required />
         </div>
         <div class="form-group">
+          <label class="form-label" for="edit-task-description">Notas / Apuntes escritos</label>
+          <textarea id="edit-task-description" class="textarea-notes" rows="2" placeholder="Notas, apuntes o detalles adicionales..."></textarea>
+        </div>
+        <div class="form-group">
           <label class="form-label" for="edit-task-category">Categoría</label>
           <select id="edit-task-category" class="select-custom">
             <option value="Trabajo">💼 Trabajo</option>
@@ -1549,6 +2194,37 @@
             <button type="button" class="preset-chip" onclick="window.TaskFlowApp.setFormPresetTomorrow('edit-task-reminder', 9)">🌅 Mañana 9am</button>
             <button type="button" class="preset-chip" onclick="document.getElementById('edit-task-reminder').value=''">🧹 Sin recordatorio</button>
           </div>
+        </div>
+
+        <!-- Sección de Gestión de Subtareas en el Modal -->
+        <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <label class="form-label" style="margin-bottom: 0;">Subtareas asociadas</label>
+            <span id="edit-subtasks-count" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">0 subtareas</span>
+          </div>
+
+          <!-- Input para agregar nueva subtarea dentro del modal -->
+          <div style="display: flex; gap: 0.4rem; margin-bottom: 0.5rem;">
+            <input 
+              type="text" 
+              id="edit-subtask-input" 
+              class="text-input" 
+              style="padding: 0.45rem 0.65rem; font-size: 0.82rem;" 
+              placeholder="+ Escribe una nueva subtarea..." 
+              onkeydown="if(event.key==='Enter'){event.preventDefault(); window.TaskFlowApp.addModalSubtask();}"
+            />
+            <button 
+              type="button" 
+              class="btn-secondary" 
+              style="padding: 0.45rem 0.75rem; font-size: 0.78rem; font-weight: 700; white-space: nowrap;" 
+              onclick="window.TaskFlowApp.addModalSubtask()"
+            >
+              + Añadir
+            </button>
+          </div>
+
+          <!-- Lista de subtareas en el modal -->
+          <div class="subtasks-list" id="edit-subtasks-container"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -1651,6 +2327,15 @@
             <span class="backup-option-desc">Carga tareas desde un archivo previo</span>
             <input type="file" id="import-file-input" accept=".json,application/json" style="display: none;" onchange="window.TaskFlowApp.handleImportFile(event)" />
           </div>
+
+          <!-- Forzar actualización / Limpiar caché de la PWA -->
+          <div class="backup-option-card" onclick="window.TaskFlowApp.forceUpdateApp()" style="grid-column: 1 / -1; border-color: rgba(99, 102, 241, 0.4);">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+            </svg>
+            <span class="backup-option-title">Recargar Última Versión</span>
+            <span class="backup-option-desc">Limpia la caché de GitHub Pages y carga las nuevas funciones de inmediato</span>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -1673,15 +2358,22 @@
     (function registerEmbeddedServiceWorker() {
       if ('serviceWorker' in navigator) {
         const swScript = `
-          const CACHE_NAME = 'taskflow-pwa-v1';
+          const CACHE_NAME = 'taskflow-pwa-v2.2';
           self.addEventListener('install', (event) => {
             self.skipWaiting();
           });
           self.addEventListener('activate', (event) => {
-            event.waitUntil(self.clients.claim());
+            event.waitUntil(
+              caches.keys().then((keys) => {
+                return Promise.all(
+                  keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+                );
+              }).then(() => self.clients.claim())
+            );
           });
           self.addEventListener('fetch', (event) => {
             if (event.request.method !== 'GET') return;
+            // Estrategia Network-First para navegación y HTML: busca siempre la versión más reciente
             event.respondWith(
               fetch(event.request)
                 .then((networkResponse) => {
@@ -1700,7 +2392,7 @@
           const blob = new Blob([swScript], { type: 'application/javascript' });
           const swUrl = URL.createObjectURL(blob);
           navigator.serviceWorker.register(swUrl)
-            .then(() => console.log('Service Worker PWA activo y listo para funcionamiento offline.'))
+            .then(() => console.log('Service Worker PWA v2.2 activo y listo para funcionamiento offline.'))
             .catch((err) => console.warn('Aviso de Service Worker:', err.message));
         } catch (e) {
           console.warn('Registro SW en modo contingencia.');
@@ -1715,6 +2407,7 @@
       // Claves de almacenamiento
       const STORAGE_KEY = 'taskflow_tasks_data_v1';
       const THEME_KEY = 'taskflow_theme_pref';
+      const DRAFT_KEY = 'taskflow_form_draft_v2';
 
       // Categorías de configuración
       const CATEGORY_MAP = {
@@ -1726,7 +2419,7 @@
         'Parqueadero': { color: 'var(--cat-otro)', label: 'Parqueadero' }
       };
 
-      // Tareas de demostración iniciales con recordatorios
+      // Tareas de demostración iniciales con recordatorios, notas y subtareas
       const nowMs = Date.now();
       const inTenMins = new Date(nowMs + 10 * 60 * 1000);
       const tomorrowNine = new Date(nowMs + 24 * 60 * 60 * 1000);
@@ -1736,46 +2429,95 @@
         {
           id: 'demo-1',
           title: 'Pagar la factura de servicios y confirmar comprobante',
+          description: 'Revisar saldo en cuenta bancaria, efectuar pago y guardar el PDF del soporte.',
           category: 'Personal',
           priority: 'alta',
           dueDate: new Date(nowMs + 86400000).toISOString().split('T')[0],
           reminderTime: formatToDatetimeLocal(inTenMins),
           reminderTriggered: false,
           completed: false,
-          createdAt: nowMs - 3600000
+          createdAt: nowMs - 3600000,
+          subtasks: [
+            { 
+              id: 'sub-1', 
+              title: 'Consultar saldo en la banca móvil', 
+              completed: true,
+              subtasks: []
+            },
+            { 
+              id: 'sub-2', 
+              title: 'Efectuar pago por PSE o transferencia', 
+              completed: false,
+              subtasks: [
+                { id: 'sub-2-1', title: 'Generar token o clave dinámica', completed: true, subtasks: [] },
+                { id: 'sub-2-2', title: 'Confirmar débito bancario exitoso', completed: false, subtasks: [] }
+              ]
+            },
+            { 
+              id: 'sub-3', 
+              title: 'Descargar comprobante en PDF', 
+              completed: false,
+              subtasks: []
+            }
+          ]
         },
         {
           id: 'demo-2',
           title: 'Revisión y exportación del informe mensual',
+          description: 'Consolidar métricas de productividad e incluir estadísticas de cumplimiento.',
           category: 'Trabajo',
           priority: 'media',
           dueDate: new Date(nowMs + 172800000).toISOString().split('T')[0],
           reminderTime: formatToDatetimeLocal(tomorrowNine),
           reminderTriggered: false,
           completed: false,
-          createdAt: nowMs - 7200000
+          createdAt: nowMs - 7200000,
+          subtasks: [
+            { 
+              id: 'sub-4', 
+              title: 'Recopilar métricas de la semana', 
+              completed: true,
+              subtasks: []
+            },
+            { 
+              id: 'sub-5', 
+              title: 'Generar copia de respaldo en JSON', 
+              completed: false,
+              subtasks: [
+                { id: 'sub-5-1', title: 'Verificar integridad del archivo descargado', completed: false, subtasks: [] }
+              ]
+            }
+          ]
         },
         {
           id: 'demo-3',
           title: 'Renovar boleto mensual de parqueadero',
+          description: 'Verificar tarifa del mes y registrar placa del vehículo.',
           category: 'Parqueadero',
           priority: 'alta',
           dueDate: new Date(nowMs + 259200000).toISOString().split('T')[0],
           reminderTime: '',
           reminderTriggered: false,
           completed: false,
-          createdAt: nowMs - 10800000
+          createdAt: nowMs - 10800000,
+          subtasks: [
+            { id: 'sub-6', title: 'Confirmar número de puesto asignado', completed: false }
+          ]
         },
         {
           id: 'demo-4',
           title: 'Instalar la aplicación como PWA en pantalla de inicio',
+          description: 'Añadir a pantalla de inicio para acceso instantáneo sin conexión.',
           category: 'Estudio',
           priority: 'baja',
           dueDate: '',
           reminderTime: '',
           reminderTriggered: false,
           completed: true,
-          createdAt: nowMs - 14400000
+          createdAt: nowMs - 14400000,
+          subtasks: [
+            { id: 'sub-7', title: 'Abrir menú del navegador y seleccionar "Instalar"', completed: true }
+          ]
         }
       ];
 
@@ -1787,11 +2529,14 @@
         searchQuery: '',
         sortBy: 'created-desc', // 'created-desc' | 'created-asc' | 'reminder-asc' | 'due-date' | 'priority' | 'alpha'
         theme: 'dark',
-        activeAlarmTaskId: null
+        activeAlarmTaskId: null,
+        formDraftSubtasks: [],  // Subtareas temporales añadidas al formulario principal
+        editingSubtasks: []     // Subtareas que se editan en el modal
       };
 
       let audioCtx = null;
       let reminderIntervalId = null;
+      let draftSaveTimer = null;
 
       /**
        * Helper para formatear objeto Date a formato ISO local (YYYY-MM-DDTHH:mm)
@@ -1814,6 +2559,7 @@
       function init() {
         loadTheme();
         loadTasks();
+        initFormDraft();
         render();
         setupEventListeners();
         updateNotificationPermissionUI();
@@ -1836,6 +2582,21 @@
           btnBackup.addEventListener('click', () => openModal('modal-backup'));
         }
 
+        // Listeners para Autoguardado en tiempo real ("que se guarde lo escrito")
+        ['input-task-title', 'input-task-description'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('input', handleFormInput);
+          }
+        });
+
+        ['select-task-category', 'select-task-priority', 'input-task-due', 'input-task-reminder'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('change', handleFormInput);
+          }
+        });
+
         // Cerrar modales con ESC
         window.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
@@ -1853,6 +2614,141 @@
             }
           });
         });
+      }
+
+      /**
+       * GESTIÓN DE BORRADOR AUTOMÁTICO ("SE GUARDE LO ESCRITO")
+       * Persiste en tiempo real el texto que el usuario está escribiendo en el formulario
+       * para evitar pérdida de datos si se recarga la página o se cierra el navegador.
+       */
+      function initFormDraft() {
+        try {
+          const draftJson = localStorage.getItem(DRAFT_KEY);
+          if (!draftJson) return;
+
+          const draft = JSON.parse(draftJson);
+          if (!draft) return;
+
+          let hasContent = false;
+
+          const titleInput = document.getElementById('input-task-title');
+          const descInput = document.getElementById('input-task-description');
+          const catSelect = document.getElementById('select-task-category');
+          const prioSelect = document.getElementById('select-task-priority');
+          const dueInput = document.getElementById('input-task-due');
+          const remInput = document.getElementById('input-task-reminder');
+
+          if (draft.title && titleInput) {
+            titleInput.value = draft.title;
+            hasContent = true;
+          }
+          if (draft.description && descInput) {
+            descInput.value = draft.description;
+            hasContent = true;
+          }
+          if (draft.category && catSelect) {
+            catSelect.value = draft.category;
+          }
+          if (draft.priority && prioSelect) {
+            prioSelect.value = draft.priority;
+          }
+          if (draft.dueDate && dueInput) {
+            dueInput.value = draft.dueDate;
+          }
+          if (draft.reminderTime && remInput) {
+            remInput.value = draft.reminderTime;
+          }
+          if (Array.isArray(draft.subtasks) && draft.subtasks.length > 0) {
+            state.formDraftSubtasks = draft.subtasks;
+            renderDraftSubtasks();
+            hasContent = true;
+          }
+
+          if (hasContent) {
+            const banner = document.getElementById('draft-restored-banner');
+            if (banner) banner.style.display = 'flex';
+            setAutosaveStatus('saved', 'Borrador cargado');
+          }
+        } catch (e) {
+          console.warn('Error al restaurar borrador:', e);
+        }
+      }
+
+      function handleFormInput() {
+        setAutosaveStatus('saving', 'Guardando...');
+        if (draftSaveTimer) clearTimeout(draftSaveTimer);
+        draftSaveTimer = setTimeout(() => {
+          saveFormDraft();
+        }, 200);
+      }
+
+      function saveFormDraft() {
+        try {
+          const titleInput = document.getElementById('input-task-title');
+          const descInput = document.getElementById('input-task-description');
+          const catSelect = document.getElementById('select-task-category');
+          const prioSelect = document.getElementById('select-task-priority');
+          const dueInput = document.getElementById('input-task-due');
+          const remInput = document.getElementById('input-task-reminder');
+
+          const draft = {
+            title: titleInput ? titleInput.value : '',
+            description: descInput ? descInput.value : '',
+            category: catSelect ? catSelect.value : 'Personal',
+            priority: prioSelect ? prioSelect.value : 'media',
+            dueDate: dueInput ? dueInput.value : '',
+            reminderTime: remInput ? remInput.value : '',
+            subtasks: state.formDraftSubtasks || [],
+            updatedAt: Date.now()
+          };
+
+          const hasData = (draft.title && draft.title.trim()) || 
+                          (draft.description && draft.description.trim()) || 
+                          (draft.subtasks && draft.subtasks.length > 0);
+
+          if (hasData) {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+            setAutosaveStatus('saved', 'Guardado en vivo');
+          } else {
+            localStorage.removeItem(DRAFT_KEY);
+            setAutosaveStatus('saved', 'Listo');
+          }
+        } catch (e) {
+          console.warn('Error al guardar borrador:', e);
+        }
+      }
+
+      function clearFormDraft(userInitiated = false) {
+        localStorage.removeItem(DRAFT_KEY);
+        state.formDraftSubtasks = [];
+        renderDraftSubtasks();
+
+        const banner = document.getElementById('draft-restored-banner');
+        if (banner) banner.style.display = 'none';
+
+        if (userInitiated) {
+          const titleInput = document.getElementById('input-task-title');
+          const descInput = document.getElementById('input-task-description');
+          const dueInput = document.getElementById('input-task-due');
+          const remInput = document.getElementById('input-task-reminder');
+          if (titleInput) titleInput.value = '';
+          if (descInput) descInput.value = '';
+          if (dueInput) dueInput.value = '';
+          if (remInput) remInput.value = '';
+          showToast('Borrador descartado', 'info');
+          setAutosaveStatus('saved', 'Autoguardado activo');
+        }
+      }
+
+      function setAutosaveStatus(stateType, text) {
+        const pill = document.getElementById('autosave-pill');
+        const textEl = document.getElementById('autosave-text');
+        if (pill) {
+          pill.className = `autosave-pill ${stateType}`;
+        }
+        if (textEl) {
+          textEl.textContent = text;
+        }
       }
 
       /**
@@ -2156,20 +3052,86 @@
       }
 
       /**
+       * NORMALIZACIÓN Y UTILIDADES RECURSIVAS DE SUBTAREAS ANIDADAS (SUB-SUBTAREAS)
+       */
+      function normalizeSubtaskItem(item, fallbackPrefix = 'sub') {
+        if (!item || typeof item !== 'object') {
+          return {
+            id: fallbackPrefix + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+            title: String(item || ''),
+            completed: false,
+            subtasks: []
+          };
+        }
+        return {
+          id: item.id || (fallbackPrefix + '-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4)),
+          title: String(item.title || ''),
+          completed: Boolean(item.completed),
+          subtasks: Array.isArray(item.subtasks) 
+            ? item.subtasks.map((c, idx) => normalizeSubtaskItem(c, 'subchild-' + idx)) 
+            : []
+        };
+      }
+
+      function countAllSubtasks(subtasks) {
+        let total = 0;
+        let completed = 0;
+        if (!Array.isArray(subtasks)) return { total: 0, completed: 0, percent: 0 };
+
+        function walk(list) {
+          for (const item of list) {
+            total++;
+            if (item.completed) completed++;
+            if (Array.isArray(item.subtasks) && item.subtasks.length > 0) {
+              walk(item.subtasks);
+            }
+          }
+        }
+        walk(subtasks);
+        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+        return { total, completed, percent };
+      }
+
+      function findSubtaskInTree(subtasksList, targetId, parent = null) {
+        if (!Array.isArray(subtasksList)) return null;
+        for (let i = 0; i < subtasksList.length; i++) {
+          const item = subtasksList[i];
+          if (item.id === targetId) {
+            return { item, index: i, list: subtasksList, parent };
+          }
+          if (Array.isArray(item.subtasks) && item.subtasks.length > 0) {
+            const found = findSubtaskInTree(item.subtasks, targetId, item);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
+
+      function normalizeTasks(rawTasks) {
+        if (!Array.isArray(rawTasks)) return [];
+        return rawTasks.map(t => ({
+          ...t,
+          description: t.description || '',
+          subtasks: Array.isArray(t.subtasks) ? t.subtasks.map(s => normalizeSubtaskItem(s)) : []
+        }));
+      }
+
+      /**
        * Persistencia Local: Carga de tareas desde localStorage
        */
       function loadTasks() {
         try {
           const stored = localStorage.getItem(STORAGE_KEY);
           if (stored) {
-            state.tasks = JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            state.tasks = normalizeTasks(parsed);
           } else {
-            state.tasks = [...INITIAL_TASKS];
+            state.tasks = normalizeTasks(INITIAL_TASKS);
             saveTasks();
           }
         } catch (e) {
           console.error('Error al leer de localStorage:', e);
-          state.tasks = [...INITIAL_TASKS];
+          state.tasks = normalizeTasks(INITIAL_TASKS);
         }
       }
 
@@ -2218,10 +3180,394 @@
       }
 
       /**
+       * GESTIÓN DE SUBTAREAS EN BORRADOR (FORMULARIO PRINCIPAL)
+       */
+      function addDraftSubtask() {
+        const input = document.getElementById('input-draft-subtask');
+        if (!input) return;
+        const title = input.value.trim();
+        if (!title) return;
+
+        state.formDraftSubtasks.push({
+          id: 'sub-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+          title: title,
+          completed: false,
+          subtasks: []
+        });
+
+        input.value = '';
+        renderDraftSubtasks();
+        saveFormDraft();
+        input.focus();
+      }
+
+      function addDraftChildSubtaskPrompt(parentSubId, parentTitle) {
+        const title = prompt(`Añadir subtarea a "${parentTitle || 'subtarea'}":`);
+        if (!title || !title.trim()) return;
+
+        const found = findSubtaskInTree(state.formDraftSubtasks, parentSubId);
+        if (found) {
+          if (!Array.isArray(found.item.subtasks)) found.item.subtasks = [];
+          found.item.subtasks.push(normalizeSubtaskItem({ title: title.trim() }, 'draft-subchild'));
+          renderDraftSubtasks();
+          saveFormDraft();
+          showToast('Subtarea anidada añadida al borrador', 'success');
+        }
+      }
+
+      function removeDraftSubtask(subId) {
+        const found = findSubtaskInTree(state.formDraftSubtasks, subId);
+        if (found) {
+          found.list.splice(found.index, 1);
+          renderDraftSubtasks();
+          saveFormDraft();
+        }
+      }
+
+      function renderDraftSubtasks() {
+        const container = document.getElementById('draft-subtasks-container');
+        if (!container) return;
+
+        if (state.formDraftSubtasks.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+
+        container.innerHTML = state.formDraftSubtasks.map(sub => {
+          const childList = Array.isArray(sub.subtasks) ? sub.subtasks : [];
+          return `
+            <div style="display: flex; flex-direction: column; gap: 0.25rem; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.4rem 0.65rem; font-size: 0.8rem; width: 100%;">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.4rem;">
+                <span style="font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 0.25rem;">
+                  📌 ${escapeHTML(sub.title)}
+                </span>
+                <div style="display: inline-flex; align-items: center; gap: 0.3rem;">
+                  <button 
+                    type="button" 
+                    class="subtask-action-btn-nested"
+                    onclick="window.TaskFlowApp.addDraftChildSubtaskPrompt('${sub.id}', '${escapeHTML(sub.title)}')"
+                    title="Añadir subtarea a '${escapeHTML(sub.title)}'"
+                  >
+                    + Subtarea
+                  </button>
+                  <button 
+                    type="button" 
+                    class="subtask-delete-btn" 
+                    style="width: 22px; height: 22px;"
+                    onclick="window.TaskFlowApp.removeDraftSubtask('${sub.id}')" 
+                    title="Quitar subtarea" 
+                    aria-label="Quitar subtarea"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              ${childList.length > 0 ? `
+                <div style="margin-left: 0.75rem; padding-left: 0.55rem; border-left: 2px dashed rgba(99, 102, 241, 0.35); display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.15rem;">
+                  ${childList.map(c => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; color: var(--text-muted); background: var(--bg-subtle); padding: 0.2rem 0.45rem; border-radius: 4px;">
+                      <span>↳ ${escapeHTML(c.title)}</span>
+                      <button 
+                        type="button" 
+                        style="background: transparent; border: none; color: var(--text-subtle); cursor: pointer; padding: 0 0.2rem; font-size: 0.75rem;"
+                        onclick="window.TaskFlowApp.removeDraftSubtask('${c.id}')"
+                        title="Quitar subtarea anidada"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      /**
+       * GESTIÓN DE SUBTAREAS DIRECTAS Y ANIDADAS EN CADA TAREA
+       */
+      function handleAddSubtaskInline(taskId, inputEl) {
+        if (!inputEl) return;
+        const title = inputEl.value.trim();
+        if (!title) return;
+
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        if (!Array.isArray(task.subtasks)) {
+          task.subtasks = [];
+        }
+
+        task.subtasks.push({
+          id: 'sub-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+          title: title,
+          completed: false,
+          subtasks: []
+        });
+
+        inputEl.value = '';
+        saveTasks();
+        render();
+        showToast('Subtarea añadida', 'success');
+      }
+
+      function handleAddChildSubtask(taskId, parentSubtaskId, inputEl) {
+        if (!inputEl) return;
+        const title = inputEl.value.trim();
+        if (!title) return;
+
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        const found = findSubtaskInTree(task.subtasks, parentSubtaskId);
+        if (found) {
+          if (!Array.isArray(found.item.subtasks)) {
+            found.item.subtasks = [];
+          }
+          found.item.subtasks.push(normalizeSubtaskItem({ title: title }, 'subchild'));
+          inputEl.value = '';
+          saveTasks();
+          render();
+          showToast('Subtarea anidada añadida', 'success');
+        }
+      }
+
+      function promptAddChildSubtask(taskId, parentSubtaskId, parentTitle) {
+        const container = document.getElementById(`nested-container-${taskId}-${parentSubtaskId}`);
+        if (container) {
+          const input = container.querySelector('.child-add-input');
+          if (input) {
+            input.focus();
+            input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+          }
+        }
+
+        const title = prompt(`Añadir subtarea a "${parentTitle || 'subtarea'}":`);
+        if (title && title.trim()) {
+          const task = state.tasks.find(t => t.id === taskId);
+          if (!task) return;
+
+          const found = findSubtaskInTree(task.subtasks, parentSubtaskId);
+          if (found) {
+            if (!Array.isArray(found.item.subtasks)) {
+              found.item.subtasks = [];
+            }
+            found.item.subtasks.push(normalizeSubtaskItem({ title: title.trim() }, 'subchild'));
+            saveTasks();
+            render();
+            showToast('Subtarea anidada añadida', 'success');
+          }
+        }
+      }
+
+      function toggleSubtask(taskId, subtaskId) {
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task || !Array.isArray(task.subtasks)) return;
+
+        const found = findSubtaskInTree(task.subtasks, subtaskId);
+        if (!found) return;
+
+        found.item.completed = !found.item.completed;
+
+        const allStats = countAllSubtasks(task.subtasks);
+        if (allStats.total > 0 && allStats.completed === allStats.total) {
+          showToast(`¡Todas las subtareas completadas! 🎉`, 'success');
+        }
+
+        saveTasks();
+        render();
+      }
+
+      function deleteSubtask(taskId, subtaskId) {
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task || !Array.isArray(task.subtasks)) return;
+
+        const found = findSubtaskInTree(task.subtasks, subtaskId);
+        if (found) {
+          found.list.splice(found.index, 1);
+          saveTasks();
+          render();
+          showToast('Subtarea eliminada', 'info');
+        }
+      }
+
+      /**
+       * GESTIÓN DE SUBTAREAS EN MODAL DE EDICIÓN
+       */
+      function addModalSubtask() {
+        const input = document.getElementById('edit-subtask-input');
+        if (!input) return;
+        const title = input.value.trim();
+        if (!title) return;
+
+        state.editingSubtasks.push({
+          id: 'sub-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+          title: title,
+          completed: false,
+          subtasks: []
+        });
+
+        input.value = '';
+        renderModalSubtasks();
+        input.focus();
+      }
+
+      function addModalChildSubtask(parentSubId, inputEl) {
+        if (!inputEl) return;
+        const title = inputEl.value.trim();
+        if (!title) return;
+
+        const found = findSubtaskInTree(state.editingSubtasks, parentSubId);
+        if (found) {
+          if (!Array.isArray(found.item.subtasks)) {
+            found.item.subtasks = [];
+          }
+          found.item.subtasks.push(normalizeSubtaskItem({ title: title }, 'subchild'));
+          inputEl.value = '';
+          renderModalSubtasks();
+        }
+      }
+
+      function addModalChildSubtaskPrompt(parentSubId, parentTitle) {
+        const title = prompt(`Añadir subtarea a "${parentTitle || 'subtarea'}":`);
+        if (!title || !title.trim()) return;
+
+        const found = findSubtaskInTree(state.editingSubtasks, parentSubId);
+        if (found) {
+          if (!Array.isArray(found.item.subtasks)) {
+            found.item.subtasks = [];
+          }
+          found.item.subtasks.push(normalizeSubtaskItem({ title: title.trim() }, 'subchild'));
+          renderModalSubtasks();
+        }
+      }
+
+      function toggleModalSubtask(subId) {
+        const found = findSubtaskInTree(state.editingSubtasks, subId);
+        if (found) {
+          found.item.completed = !found.item.completed;
+          renderModalSubtasks();
+        }
+      }
+
+      function deleteModalSubtask(subId) {
+        const found = findSubtaskInTree(state.editingSubtasks, subId);
+        if (found) {
+          found.list.splice(found.index, 1);
+          renderModalSubtasks();
+        }
+      }
+
+      function renderModalSubtasks() {
+        const container = document.getElementById('edit-subtasks-container');
+        const countEl = document.getElementById('edit-subtasks-count');
+        if (!container) return;
+
+        const stats = countAllSubtasks(state.editingSubtasks);
+        if (countEl) {
+          countEl.textContent = `${stats.completed}/${stats.total} completadas`;
+        }
+
+        if (state.editingSubtasks.length === 0) {
+          container.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-subtle); margin: 0.25rem 0;">No hay subtareas añadidas.</p>`;
+          return;
+        }
+
+        container.innerHTML = state.editingSubtasks.map(sub => {
+          const childList = Array.isArray(sub.subtasks) ? sub.subtasks : [];
+          const childStats = countAllSubtasks(childList);
+
+          return `
+            <div class="subtask-node" style="margin-bottom: 0.35rem;">
+              <div class="subtask-row ${sub.completed ? 'completed' : ''}">
+                <button 
+                  type="button" 
+                  class="subtask-checkbox" 
+                  onclick="window.TaskFlowApp.toggleModalSubtask('${sub.id}')"
+                  title="${sub.completed ? 'Marcar pendiente' : 'Completar'}"
+                >
+                  ${sub.completed ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                </button>
+                <span class="subtask-title">${escapeHTML(sub.title)}</span>
+
+                ${childList.length > 0 ? `
+                  <span class="subtask-child-badge">🌿 ${childStats.completed}/${childStats.total}</span>
+                ` : ''}
+
+                <button 
+                  type="button" 
+                  class="subtask-action-btn-nested"
+                  onclick="window.TaskFlowApp.addModalChildSubtaskPrompt('${sub.id}', '${escapeHTML(sub.title)}')"
+                  title="Añadir subtarea"
+                >
+                  + Subtarea
+                </button>
+
+                <button 
+                  type="button" 
+                  class="subtask-delete-btn" 
+                  onclick="window.TaskFlowApp.deleteModalSubtask('${sub.id}')" 
+                  title="Eliminar subtarea"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+
+              <!-- Subtareas anidadas en el modal -->
+              <div class="sub-nested-container">
+                ${childList.map(c => `
+                  <div class="sub-subtask-item ${c.completed ? 'completed' : ''}">
+                    <button 
+                      type="button" 
+                      class="subtask-checkbox" 
+                      onclick="window.TaskFlowApp.toggleModalSubtask('${c.id}')"
+                      title="${c.completed ? 'Marcar pendiente' : 'Completar'}"
+                    >
+                      ${c.completed ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                    </button>
+                    <span class="subtask-title">${escapeHTML(c.title)}</span>
+                    <button 
+                      type="button" 
+                      class="subtask-delete-btn" 
+                      style="width: 20px; height: 20px;"
+                      onclick="window.TaskFlowApp.deleteModalSubtask('${c.id}')" 
+                      title="Eliminar"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                  </div>
+                `).join('')}
+
+                <div class="child-add-row">
+                  <input 
+                    type="text" 
+                    class="child-add-input" 
+                    placeholder="+ Subtarea para '${escapeHTML(sub.title)}'..."
+                    onkeydown="if(event.key==='Enter'){event.preventDefault(); window.TaskFlowApp.addModalChildSubtask('${sub.id}', this);}"
+                  />
+                  <button 
+                    type="button" 
+                    class="child-add-btn" 
+                    onclick="window.TaskFlowApp.addModalChildSubtask('${sub.id}', this.previousElementSibling)"
+                  >
+                    + Añadir
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      /**
        * Agregar nueva tarea
        */
       function handleAddTask() {
         const titleInput = document.getElementById('input-task-title');
+        const descInput = document.getElementById('input-task-description');
         const catSelect = document.getElementById('select-task-category');
         const prioSelect = document.getElementById('select-task-priority');
         const dueInput = document.getElementById('input-task-due');
@@ -2230,6 +3576,7 @@
         const title = titleInput.value.trim();
         if (!title) return;
 
+        const description = descInput ? descInput.value.trim() : '';
         const reminderVal = reminderInput ? reminderInput.value : '';
 
         // Si tiene recordatorio y no tiene permisos de notificación, solicitar amigablemente
@@ -2240,23 +3587,28 @@
         const newTask = {
           id: 'task-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
           title: title,
+          description: description,
           category: catSelect ? catSelect.value : 'Personal',
           priority: prioSelect ? prioSelect.value : 'media',
           dueDate: dueInput ? dueInput.value : '',
           reminderTime: reminderVal,
           reminderTriggered: false,
           completed: false,
-          createdAt: Date.now()
+          createdAt: Date.now(),
+          subtasks: JSON.parse(JSON.stringify(state.formDraftSubtasks))
         };
 
         state.tasks.unshift(newTask);
         saveTasks();
         render();
 
-        // Limpiar inputs
+        // Limpiar inputs y borrador guardado
         titleInput.value = '';
+        if (descInput) descInput.value = '';
         if (dueInput) dueInput.value = '';
         if (reminderInput) reminderInput.value = '';
+        clearFormDraft(false);
+
         titleInput.focus();
 
         if (reminderVal) {
@@ -2307,10 +3659,14 @@
 
         document.getElementById('edit-task-id').value = task.id;
         document.getElementById('edit-task-title').value = task.title;
+        document.getElementById('edit-task-description').value = task.description || '';
         document.getElementById('edit-task-category').value = task.category || 'Personal';
         document.getElementById('edit-task-priority').value = task.priority || 'media';
         document.getElementById('edit-task-due').value = task.dueDate || '';
         document.getElementById('edit-task-reminder').value = task.reminderTime || '';
+
+        state.editingSubtasks = JSON.parse(JSON.stringify(task.subtasks || []));
+        renderModalSubtasks();
 
         openModal('modal-edit-task');
       }
@@ -2333,10 +3689,12 @@
         const newReminder = document.getElementById('edit-task-reminder').value;
 
         task.title = newTitle;
+        task.description = document.getElementById('edit-task-description').value.trim();
         task.category = document.getElementById('edit-task-category').value;
         task.priority = document.getElementById('edit-task-priority').value;
         task.dueDate = document.getElementById('edit-task-due').value;
         task.reminderTime = newReminder;
+        task.subtasks = JSON.parse(JSON.stringify(state.editingSubtasks));
         
         // Si se cambió o reprogramó el recordatorio, resetear el flag triggered
         if (newReminder && newReminder !== prevReminder) {
@@ -2490,17 +3848,19 @@
               throw new Error('El archivo no contiene un formato de tareas válido.');
             }
 
-            // Normalización y validación
+            // Normalización y validación con soporte para subtareas anidadas
             const validTasks = importedTasks.map((t, idx) => ({
               id: t.id || 'imp-' + Date.now() + '-' + idx,
               title: String(t.title || 'Tarea sin título'),
+              description: String(t.description || ''),
               category: t.category || 'Personal',
               priority: ['alta', 'media', 'baja'].includes(t.priority) ? t.priority : 'media',
               dueDate: t.dueDate || '',
               reminderTime: t.reminderTime || '',
               reminderTriggered: Boolean(t.reminderTriggered),
               completed: Boolean(t.completed),
-              createdAt: t.createdAt || Date.now()
+              createdAt: t.createdAt || Date.now(),
+              subtasks: Array.isArray(t.subtasks) ? t.subtasks.map((s, sIdx) => normalizeSubtaskItem(s, 'imp-sub-' + sIdx)) : []
             }));
 
             state.tasks = validTasks;
@@ -2517,6 +3877,24 @@
         };
 
         reader.readAsText(file);
+      }
+
+      /**
+       * Forzar actualización de la PWA (limpieza de caché y recarga de la última versión)
+       */
+      function forceUpdateApp() {
+        showToast('Comprobando actualización y limpiando caché...', 'info');
+        if ('caches' in window) {
+          caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))));
+        }
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            for (let reg of regs) reg.unregister();
+          });
+        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
       }
 
       /**
@@ -2563,11 +3941,18 @@
           // Filtro por Categoría
           if (state.categoryFilter !== 'all' && task.category !== state.categoryFilter) return false;
 
-          // Filtro por Búsqueda
+          // Filtro por Búsqueda (incluyendo notas y subtareas recursivas)
           if (state.searchQuery) {
-            const matchTitle = task.title.toLowerCase().includes(state.searchQuery);
-            const matchCat = (task.category || '').toLowerCase().includes(state.searchQuery);
-            if (!matchTitle && !matchCat) return false;
+            const q = state.searchQuery;
+            const matchTitle = (task.title || '').toLowerCase().includes(q);
+            const matchDesc = (task.description || '').toLowerCase().includes(q);
+            const matchCat = (task.category || '').toLowerCase().includes(q);
+            function checkSubMatch(subs) {
+              if (!Array.isArray(subs)) return false;
+              return subs.some(s => (s.title || '').toLowerCase().includes(q) || checkSubMatch(s.subtasks));
+            }
+            const matchSub = checkSubMatch(task.subtasks);
+            if (!matchTitle && !matchDesc && !matchCat && !matchSub) return false;
           }
 
           return true;
@@ -2624,6 +4009,13 @@
           // Datos de Recordatorio
           const reminderMeta = formatReminderLabel(task.reminderTime, task.reminderTriggered, task.completed);
 
+          // Subtareas y estadísticas recursivas
+          const subtasks = Array.isArray(task.subtasks) ? task.subtasks : [];
+          const subStats = countAllSubtasks(subtasks);
+          const totalSub = subStats.total;
+          const doneSub = subStats.completed;
+          const subPercent = subStats.percent;
+
           // Prioridades
           let prioLabel = 'Media';
           let prioColor = 'var(--prio-media)';
@@ -2656,6 +4048,183 @@
               <!-- Texto y Metadatos -->
               <div class="task-content">
                 <div class="task-title">${escapeHTML(task.title)}</div>
+
+                <!-- Notas / Descripción guardada si existe -->
+                ${task.description ? `
+                  <div class="task-desc-box">${escapeHTML(task.description)}</div>
+                ` : ''}
+
+                <!-- Subtareas y Progreso Jerárquico -->
+                <div class="task-subtasks-container">
+                  ${totalSub > 0 ? `
+                    <div class="subtasks-header">
+                      <span>Subtareas (${doneSub}/${totalSub})</span>
+                      <div class="subtasks-progress-bar" title="${subPercent}% completado">
+                        <div class="subtasks-progress-fill" style="width: ${subPercent}%;"></div>
+                      </div>
+                    </div>
+                    <div class="subtasks-list">
+                      ${subtasks.map(s => {
+                        const childList = Array.isArray(s.subtasks) ? s.subtasks : [];
+                        const childStats = countAllSubtasks(childList);
+
+                        return `
+                          <div class="subtask-node" id="subtask-node-${task.id}-${s.id}">
+                            <div class="subtask-row ${s.completed ? 'completed' : ''}">
+                              <button 
+                                type="button" 
+                                class="subtask-checkbox" 
+                                onclick="window.TaskFlowApp.toggleSubtask('${task.id}', '${s.id}')"
+                                aria-label="${s.completed ? 'Desmarcar subtarea' : 'Completar subtarea'}"
+                                title="${s.completed ? 'Desmarcar subtarea' : 'Completar subtarea'}"
+                              >
+                                ${s.completed ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                              </button>
+                              <span class="subtask-title">${escapeHTML(s.title)}</span>
+
+                              ${childList.length > 0 ? `
+                                <span class="subtask-child-badge" title="${childStats.completed}/${childStats.total} subtareas anidadas completadas">
+                                  🌿 ${childStats.completed}/${childStats.total}
+                                </span>
+                              ` : ''}
+
+                              <!-- Botón para añadir subtarea a esta subtarea -->
+                              <button 
+                                type="button" 
+                                class="subtask-action-btn-nested"
+                                onclick="window.TaskFlowApp.promptAddChildSubtask('${task.id}', '${s.id}', '${escapeHTML(s.title)}')"
+                                title="Añadir subtarea a '${escapeHTML(s.title)}'"
+                                aria-label="Añadir subtarea a '${escapeHTML(s.title)}'"
+                              >
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>+ Subtarea</span>
+                              </button>
+
+                              <!-- Eliminar subtarea -->
+                              <button 
+                                type="button" 
+                                class="subtask-delete-btn" 
+                                onclick="window.TaskFlowApp.deleteSubtask('${task.id}', '${s.id}')" 
+                                title="Eliminar subtarea"
+                                aria-label="Eliminar subtarea"
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                              </button>
+                            </div>
+
+                            <!-- Contenedor anidado de sub-subtareas con input rápido -->
+                            <div class="sub-nested-container" id="nested-container-${task.id}-${s.id}">
+                              ${childList.length > 0 ? `
+                                <div class="sub-subtasks-tree">
+                                  ${childList.map(c => {
+                                    const grandChildren = Array.isArray(c.subtasks) ? c.subtasks : [];
+                                    return `
+                                      <div class="sub-subtask-item ${c.completed ? 'completed' : ''}" id="subchild-${task.id}-${c.id}">
+                                        <button 
+                                          type="button" 
+                                          class="subtask-checkbox" 
+                                          onclick="window.TaskFlowApp.toggleSubtask('${task.id}', '${c.id}')"
+                                          aria-label="${c.completed ? 'Desmarcar' : 'Completar'}"
+                                          title="${c.completed ? 'Desmarcar' : 'Completar'}"
+                                        >
+                                          ${c.completed ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                                        </button>
+                                        <span class="subtask-title">${escapeHTML(c.title)}</span>
+                                        <button 
+                                          type="button" 
+                                          class="subtask-action-btn-nested"
+                                          style="padding: 0.15rem 0.35rem; font-size: 0.68rem;"
+                                          onclick="window.TaskFlowApp.promptAddChildSubtask('${task.id}', '${c.id}', '${escapeHTML(c.title)}')"
+                                          title="Añadir subtarea"
+                                        >
+                                          + Subtarea
+                                        </button>
+                                        <button 
+                                          type="button" 
+                                          class="subtask-delete-btn" 
+                                          style="width: 22px; height: 22px;"
+                                          onclick="window.TaskFlowApp.deleteSubtask('${task.id}', '${c.id}')" 
+                                          title="Eliminar subtarea"
+                                          aria-label="Eliminar subtarea"
+                                        >
+                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                        </button>
+                                      </div>
+                                      ${grandChildren.length > 0 ? `
+                                        <div style="margin-left: 1.25rem; padding-left: 0.5rem; border-left: 2px dashed rgba(99, 102, 241, 0.25); display: flex; flex-direction: column; gap: 0.25rem; margin-top: 0.25rem;">
+                                          ${grandChildren.map(gc => `
+                                            <div class="sub-subtask-item ${gc.completed ? 'completed' : ''}" id="grandchild-${task.id}-${gc.id}">
+                                              <button 
+                                                type="button" 
+                                                class="subtask-checkbox" 
+                                                onclick="window.TaskFlowApp.toggleSubtask('${task.id}', '${gc.id}')"
+                                                title="${gc.completed ? 'Desmarcar' : 'Completar'}"
+                                              >
+                                                ${gc.completed ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                                              </button>
+                                              <span class="subtask-title">${escapeHTML(gc.title)}</span>
+                                              <button 
+                                                type="button" 
+                                                class="subtask-delete-btn" 
+                                                style="width: 20px; height: 20px;"
+                                                onclick="window.TaskFlowApp.deleteSubtask('${task.id}', '${gc.id}')" 
+                                                title="Eliminar"
+                                              >
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                              </button>
+                                            </div>
+                                          `).join('')}
+                                        </div>
+                                      ` : ''}
+                                    `;
+                                  }).join('')}
+                                </div>
+                              ` : ''}
+
+                              <!-- Fila para agregar subtarea a esta subtarea -->
+                              <div class="child-add-row">
+                                <input 
+                                  type="text" 
+                                  class="child-add-input" 
+                                  placeholder="+ Subtarea para '${escapeHTML(s.title)}'..."
+                                  onkeydown="if(event.key==='Enter'){event.preventDefault(); window.TaskFlowApp.handleAddChildSubtask('${task.id}', '${s.id}', this);}"
+                                />
+                                <button 
+                                  type="button" 
+                                  class="child-add-btn" 
+                                  onclick="window.TaskFlowApp.handleAddChildSubtask('${task.id}', '${s.id}', this.previousElementSibling)"
+                                  title="Añadir subtarea anidada"
+                                >
+                                  + Añadir
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        `;
+                      }).join('')}
+                    </div>
+                  ` : ''}
+
+                  <!-- Campo rápido para agregar subtarea principal -->
+                  <div class="subtask-add-row">
+                    <input 
+                      type="text" 
+                      class="subtask-add-input" 
+                      placeholder="+ Añadir subtarea (Enter para guardar)..." 
+                      onkeydown="if(event.key==='Enter'){event.preventDefault(); window.TaskFlowApp.handleAddSubtaskInline('${task.id}', this);}" 
+                    />
+                    <button 
+                      type="button" 
+                      class="subtask-add-btn" 
+                      onclick="window.TaskFlowApp.handleAddSubtaskInline('${task.id}', this.previousElementSibling)"
+                      title="Añadir subtarea"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                      <span>Añadir</span>
+                    </button>
+                  </div>
+                </div>
+
                 <div class="task-meta">
                   <span class="meta-tag tag-category" style="--cat-color: ${catInfo.color}">
                     ${escapeHTML(catInfo.label)}
@@ -2663,6 +4232,11 @@
                   <span class="meta-tag tag-priority" style="--prio-color: ${prioColor}; --prio-bg: ${prioBg}">
                     ${prioLabel}
                   </span>
+                  ${totalSub > 0 ? `
+                    <span class="meta-tag" style="background: rgba(99, 102, 241, 0.12); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25);">
+                      📋 ${doneSub}/${totalSub} subtareas
+                    </span>
+                  ` : ''}
                   ${reminderMeta ? `
                     <span class="tag-reminder ${reminderMeta.statusClass}" title="${reminderMeta.tooltip}">
                       ${reminderMeta.text}
@@ -2832,8 +4406,26 @@
         handleAlarmSnooze,
         exportTasksJSON,
         handleImportFile,
+        forceUpdateApp,
         openModal,
-        closeModal
+        closeModal,
+        // Funciones de subtareas (incluyendo sub-subtareas jerárquicas) y persistencia en vivo
+        addDraftSubtask,
+        addDraftChildSubtaskPrompt,
+        removeDraftSubtask,
+        clearFormDraft,
+        handleAddSubtaskInline,
+        handleAddChildSubtask,
+        promptAddChildSubtask,
+        toggleSubtask,
+        deleteSubtask,
+        addModalSubtask,
+        addModalChildSubtask,
+        addModalChildSubtaskPrompt,
+        toggleModalSubtask,
+        deleteModalSubtask,
+        toggleTheme,
+        setTheme
       };
     })();
   </script>
