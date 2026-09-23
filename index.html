@@ -971,6 +971,52 @@
       color: #ef4444;
     }
 
+    .action-btn.btn-toggle-collapse {
+      color: var(--text-muted);
+      position: relative;
+    }
+
+    .action-btn.btn-toggle-collapse:hover {
+      color: var(--accent);
+      background: rgba(99, 102, 241, 0.15);
+    }
+
+    .action-btn.btn-toggle-collapse.is-collapsed {
+      color: var(--accent);
+      background: rgba(99, 102, 241, 0.12);
+    }
+
+    .action-btn.btn-toggle-collapse svg {
+      transition: transform var(--transition-fast);
+    }
+
+    .action-btn.btn-toggle-collapse.is-collapsed svg {
+      transform: rotate(-90deg);
+    }
+
+    /* Estado Colapsado / Minimizado de Tarea */
+    .task-item.is-collapsed {
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+
+    .task-item.is-collapsed .task-desc-box,
+    .task-item.is-collapsed .task-subtasks-container {
+      display: none !important;
+    }
+
+    .task-item.is-collapsed .meta-tag-subtask-summary {
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: all var(--transition-fast);
+    }
+
+    .task-item.is-collapsed .meta-tag-subtask-summary:hover {
+      background: rgba(99, 102, 241, 0.22) !important;
+      border-color: var(--accent) !important;
+    }
+
     /* ==========================================================================
        ESTADO VACÍO (EMPTY STATE)
        ========================================================================== */
@@ -2474,7 +2520,7 @@
     (function registerEmbeddedServiceWorker() {
       if ('serviceWorker' in navigator) {
         const swScript = `
-          const CACHE_NAME = 'taskflow-pwa-v2.3';
+          const CACHE_NAME = 'taskflow-pwa-v2.4';
           self.addEventListener('install', (event) => {
             self.skipWaiting();
           });
@@ -2524,6 +2570,7 @@
       const STORAGE_KEY = 'taskflow_tasks_data_v1';
       const THEME_KEY = 'taskflow_theme_pref';
       const DRAFT_KEY = 'taskflow_form_draft_v2';
+      const COLLAPSED_KEY = 'taskflow_collapsed_tasks_v1';
 
       // Categorías de configuración
       const CATEGORY_MAP = {
@@ -2640,6 +2687,7 @@
       // Estado reactivo de la aplicación
       let state = {
         tasks: [],
+        collapsedTaskIds: new Set(), // IDs de tareas minimizadas
         filter: 'all',          // 'all' | 'pending' | 'with-reminder' | 'completed'
         categoryFilter: 'all',  // 'all' | 'Trabajo' | ...
         searchQuery: '',
@@ -2670,11 +2718,38 @@
       }
 
       /**
+       * Persistencia Local: Tareas minimizadas / colapsadas
+       */
+      function loadCollapsedTasks() {
+        try {
+          const raw = localStorage.getItem(COLLAPSED_KEY);
+          if (raw) {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr)) {
+              state.collapsedTaskIds = new Set(arr);
+            }
+          }
+        } catch (e) {
+          console.warn('Error al cargar tareas colapsadas:', e);
+          state.collapsedTaskIds = new Set();
+        }
+      }
+
+      function saveCollapsedTasks() {
+        try {
+          localStorage.setItem(COLLAPSED_KEY, JSON.stringify(Array.from(state.collapsedTaskIds)));
+        } catch (e) {
+          console.warn('Error al guardar tareas colapsadas:', e);
+        }
+      }
+
+      /**
        * Inicialización de la aplicación
        */
       function init() {
         loadTheme();
         loadTasks();
+        loadCollapsedTasks();
         initFormDraft();
         render();
         setupEventListeners();
@@ -3760,12 +3835,29 @@
       }
 
       /**
+       * Alternar estado colapsado / minimizado de una tarea
+       */
+      function toggleCollapseTask(id) {
+        if (state.collapsedTaskIds.has(id)) {
+          state.collapsedTaskIds.delete(id);
+        } else {
+          state.collapsedTaskIds.add(id);
+        }
+        saveCollapsedTasks();
+        render();
+      }
+
+      /**
        * Eliminar tarea
        */
       function deleteTask(id) {
         const index = state.tasks.findIndex(t => t.id === id);
         if (index !== -1) {
           state.tasks.splice(index, 1);
+          if (state.collapsedTaskIds.has(id)) {
+            state.collapsedTaskIds.delete(id);
+            saveCollapsedTasks();
+          }
           saveTasks();
           render();
           showToast(`Tarea eliminada`, 'info');
@@ -4127,6 +4219,7 @@
         const html = filtered.map(task => {
           const isOverdue = task.dueDate && task.dueDate < todayStr && !task.completed;
           const catInfo = CATEGORY_MAP[task.category] || { color: 'var(--accent)', label: task.category || 'General' };
+          const isCollapsed = state.collapsedTaskIds.has(task.id);
 
           // Datos de Recordatorio
           const reminderMeta = formatReminderLabel(task.reminderTime, task.reminderTriggered, task.completed);
@@ -4154,7 +4247,7 @@
           }
 
           return `
-            <article class="task-item ${task.completed ? 'completed' : ''}" id="task-item-${task.id}" data-id="${task.id}">
+            <article class="task-item ${task.completed ? 'completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}" id="task-item-${task.id}" data-id="${task.id}">
               <!-- Checkbox -->
               <button 
                 class="custom-checkbox" 
@@ -4169,7 +4262,7 @@
 
               <!-- Texto y Metadatos -->
               <div class="task-content">
-                <div class="task-title">${escapeHTML(task.title)}</div>
+                <div class="task-title" onclick="window.TaskFlowApp.toggleCollapseTask('${task.id}')" style="cursor: pointer;" title="${isCollapsed ? 'Clic para expandir subtareas' : 'Clic para minimizar subtareas'}">${escapeHTML(task.title)}</div>
 
                 <!-- Notas / Descripción guardada si existe -->
                 ${task.description ? `
@@ -4179,8 +4272,13 @@
                 <!-- Subtareas y Progreso Jerárquico -->
                 <div class="task-subtasks-container">
                   ${totalSub > 0 ? `
-                    <div class="subtasks-header">
-                      <span>Subtareas (${doneSub}/${totalSub})</span>
+                    <div class="subtasks-header" onclick="window.TaskFlowApp.toggleCollapseTask('${task.id}')" style="cursor: pointer;" title="Minimizar / Ocultar subtareas">
+                      <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                        Subtareas (${doneSub}/${totalSub})
+                      </span>
                       <div class="subtasks-progress-bar" title="${subPercent}% completado">
                         <div class="subtasks-progress-fill" style="width: ${subPercent}%;"></div>
                       </div>
@@ -4361,8 +4459,13 @@
                     ${prioLabel}
                   </span>
                   ${totalSub > 0 ? `
-                    <span class="meta-tag" style="background: rgba(99, 102, 241, 0.12); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25);">
-                      📋 ${doneSub}/${totalSub} subtareas
+                    <span 
+                      class="meta-tag meta-tag-subtask-summary" 
+                      onclick="window.TaskFlowApp.toggleCollapseTask('${task.id}')"
+                      style="background: rgba(99, 102, 241, 0.12); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.25); cursor: pointer;"
+                      title="${isCollapsed ? 'Clic para expandir subtareas' : 'Clic para minimizar subtareas'}"
+                    >
+                      📋 ${doneSub}/${totalSub} subtareas ${isCollapsed ? '▸' : '▾'}
                     </span>
                   ` : ''}
                   ${reminderMeta ? `
@@ -4386,6 +4489,16 @@
 
               <!-- Botones de Acción -->
               <div class="task-actions">
+                <button 
+                  class="action-btn btn-toggle-collapse ${isCollapsed ? 'is-collapsed' : ''}" 
+                  onclick="window.TaskFlowApp.toggleCollapseTask('${task.id}')" 
+                  title="${isCollapsed ? 'Expandir tarea y subtareas' : 'Minimizar tarea (ocultar subtareas)'}"
+                  aria-label="${isCollapsed ? 'Expandir tarea' : 'Minimizar tarea'}"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
                 ${task.reminderTime && !task.completed ? `
                   <button 
                     class="action-btn" 
@@ -4518,6 +4631,7 @@
       return {
         handleAddTask,
         toggleTask,
+        toggleCollapseTask,
         deleteTask,
         openEditTask,
         saveEditedTask,
