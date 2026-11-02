@@ -788,6 +788,202 @@
     }
 
     /* ==========================================================================
+       PLANIFICADOR SEMANAL / SELECTOR DE DÍAS
+       ========================================================================== */
+    .week-planner-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 0.85rem 1.15rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .week-nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .week-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .week-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .week-active-badge {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .week-quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .week-quick-btn {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .week-quick-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .week-quick-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .week-days-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.4rem;
+    }
+
+    .week-day-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.5rem 0.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--text-muted);
+      position: relative;
+      min-width: 0;
+      user-select: none;
+    }
+
+    .week-day-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: rgba(99, 102, 241, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .week-day-btn.active {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .week-day-btn.is-today::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+    }
+
+    .week-day-name {
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1;
+    }
+
+    .week-day-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.1rem 0.38rem;
+      border-radius: 999px;
+      background: var(--bg-subtle);
+      color: var(--text-subtle);
+      min-width: 17px;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .week-day-btn.active .week-day-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .week-day-today-tag {
+      font-size: 0.56rem;
+      font-weight: 800;
+      color: #10b981;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: -1px;
+    }
+
+    .week-day-btn.active .week-day-today-tag {
+      color: #a7f3d0;
+    }
+
+    .tag-day {
+      background: rgba(139, 92, 246, 0.12);
+      color: #a78bfa;
+      border: 1px solid rgba(139, 92, 246, 0.28);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .tag-day:hover {
+      background: rgba(139, 92, 246, 0.22);
+      border-color: #a78bfa;
+    }
+
+    [data-theme="light"] .tag-day {
+      background: rgba(124, 58, 237, 0.08);
+      color: #6d28d9;
+      border-color: rgba(124, 58, 237, 0.2);
+    }
+
+    /* ==========================================================================
        LISTA DE TAREAS
        ========================================================================== */
     .task-list {
@@ -1175,6 +1371,108 @@
 
     .btn-secondary:hover {
       background: var(--bg-card-hover);
+    }
+
+    /* Modal de Alarma y Alertas Sonoras */
+    .alarm-modal-card {
+      max-width: 420px;
+      text-align: center;
+      border: 2px solid var(--accent);
+      box-shadow: 0 20px 45px rgba(99, 102, 241, 0.4);
+      animation: alarmPulseGlow 2.5s infinite ease-in-out;
+    }
+
+    @keyframes alarmPulseGlow {
+      0%, 100% {
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.35);
+        border-color: var(--accent);
+      }
+      50% {
+        box-shadow: 0 20px 50px rgba(239, 68, 68, 0.45);
+        border-color: #ef4444;
+      }
+    }
+
+    .alarm-hero-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin: 0 auto;
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+      animation: bellShake 1.2s infinite ease;
+    }
+
+    @keyframes bellShake {
+      0%, 100% { transform: rotate(0deg); }
+      15% { transform: rotate(14deg); }
+      30% { transform: rotate(-14deg); }
+      45% { transform: rotate(10deg); }
+      60% { transform: rotate(-10deg); }
+      75% { transform: rotate(4deg); }
+    }
+
+    .btn-alarm-voice-action {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(139, 92, 246, 0.18) 100%);
+      border: 1.5px solid var(--accent);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all var(--transition-fast);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+      width: 100%;
+    }
+
+    .btn-alarm-voice-action:hover {
+      background: var(--accent);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-alarm-voice-action.speaking {
+      background: #10b981;
+      border-color: #10b981;
+      color: #ffffff;
+      animation: voiceSpeakPulse 0.9s infinite alternate;
+    }
+
+    @keyframes voiceSpeakPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.02); box-shadow: 0 0 16px rgba(16, 185, 129, 0.6); }
+    }
+
+    .alarm-sound-unmute-prompt {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(245, 158, 11, 0.18) 100%);
+      border: 1px dashed #ef4444;
+      border-radius: 10px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ef4444;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      animation: alertPromptBlink 1.5s infinite;
+      margin-top: 0.25rem;
+    }
+
+    @keyframes alertPromptBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
     }
 
     /* Modal Backup Específico */
@@ -1801,14 +2099,15 @@
       .notif-actions {
         width: 100%;
         display: flex;
+        flex-wrap: wrap;
         gap: 0.4rem;
       }
       .btn-notif-action, .btn-test-alarm {
-        flex: 1;
+        flex: 1 1 calc(50% - 0.4rem);
         justify-content: center;
-        padding: 0.55rem;
-        font-size: 0.78rem;
-        min-height: 44px;
+        padding: 0.48rem 0.5rem;
+        font-size: 0.74rem;
+        min-height: 38px;
       }
       .dashboard-stats {
         grid-template-columns: repeat(3, 1fr);
@@ -1824,6 +2123,46 @@
       }
       .stat-value {
         font-size: 1.25rem;
+      }
+      .week-planner-card {
+        padding: 0.75rem 0.85rem;
+        border-radius: 14px;
+        gap: 0.5rem;
+      }
+      .week-nav-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.45rem;
+      }
+      .week-quick-actions {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.35rem;
+      }
+      .week-quick-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 0.32rem 0.5rem;
+        font-size: 0.72rem;
+      }
+      .week-days-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.35rem;
+      }
+      .week-day-btn {
+        padding: 0.45rem 0.2rem;
+        min-height: 48px;
+        border-radius: 10px;
+      }
+      .week-day-name {
+        font-size: 0.7rem;
+      }
+      .week-day-badge {
+        font-size: 0.65rem;
+        padding: 0.05rem 0.32rem;
+      }
+      .week-active-badge {
+        font-size: 0.72rem;
       }
       .task-creator-box {
         padding: 0.9rem;
@@ -1848,9 +2187,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.45rem;
-      }
-      .creator-options input[type="date"] {
-        grid-column: span 2;
       }
       .select-custom, .date-input {
         width: 100%;
@@ -2068,6 +2404,19 @@
             <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
         </button>
+
+        <!-- Control de Notificaciones con Voz (Lectura en voz alta) -->
+        <button class="icon-btn" id="btn-voice-toggle" onclick="window.TaskFlowApp.toggleVoice()" title="Voz en notificaciones: Activada (Clic para silenciar)" aria-label="Alternar voz en notificaciones">
+          <svg id="voice-icon-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="voice-icon-off" style="display: none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -2075,9 +2424,16 @@
     <div class="notification-status-bar" id="notification-status-bar">
       <div class="notif-info-wrap">
         <span class="notif-dot default" id="notif-status-dot" title="Estado de permisos de notificación"></span>
-        <span id="notif-status-text">Recordatorios: Notificaciones pendientes de activación</span>
+        <span id="notif-status-text">Recordatorios: Notificaciones con voz y alarma activas</span>
       </div>
       <div class="notif-actions">
+        <button class="btn-test-alarm" id="btn-test-voice" onclick="window.TaskFlowApp.testVoice()" title="Escuchar una muestra de la voz de las notificaciones">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <span>Probar voz</span>
+        </button>
         <button class="btn-test-alarm" id="btn-quick-test-alarm" onclick="window.TaskFlowApp.triggerQuickTest(5)" title="Crear una tarea de prueba que sonará en 5 segundos">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -2121,6 +2477,39 @@
       </div>
     </div>
 
+    <!-- PLANIFICADOR SEMANAL / SELECTOR DE DÍAS -->
+    <section class="week-planner-card" id="week-planner-card" aria-label="Planificador por días de la semana">
+      <div class="week-nav-header">
+        <div class="week-title-wrap">
+          <span class="week-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Día de la semana:
+          </span>
+          <span class="week-active-badge" id="week-active-day-badge">
+            🗓️ Lunes
+          </span>
+        </div>
+        <div class="week-quick-actions">
+          <button type="button" class="week-quick-btn" id="btn-week-today" onclick="window.TaskFlowApp.selectToday()" title="Ir al día de hoy">
+            📍 Ir a Hoy
+          </button>
+          <button type="button" class="week-quick-btn" id="btn-week-all" onclick="window.TaskFlowApp.setDayFilter('todos')" title="Ver todas las tareas de la semana">
+            ✨ Ver Todos
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuadrícula interactiva de Días de la semana -->
+      <div class="week-days-grid" id="week-days-grid" role="tablist" aria-label="Selector de días">
+        <!-- Renderizado dinámicamente con JavaScript -->
+      </div>
+    </section>
+
     <!-- FORMULARIO CREACIÓN DE TAREAS -->
     <section class="task-creator-box" id="task-creator-box">
       <!-- Indicador de Autoguardado en Vivo -->
@@ -2130,7 +2519,7 @@
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          Nueva Tarea
+          <span id="creator-box-title">Nueva Tarea</span>
         </span>
         <span class="autosave-pill saved" id="autosave-pill" title="Lo que escribes se guarda automáticamente en tiempo real">
           <span class="autosave-dot"></span>
@@ -2199,6 +2588,17 @@
         </div>
 
         <div class="creator-options">
+          <!-- Día de la semana -->
+          <select id="select-task-day" class="select-custom" title="Día de la semana asignado" onchange="window.TaskFlowApp.handleTaskDayChange(this.value)">
+            <option value="lunes">🗓️ Lunes</option>
+            <option value="martes">🗓️ Martes</option>
+            <option value="miercoles">🗓️ Miércoles</option>
+            <option value="jueves">🗓️ Jueves</option>
+            <option value="viernes">🗓️ Viernes</option>
+            <option value="sabado">🗓️ Sábado</option>
+            <option value="domingo">🗓️ Domingo</option>
+          </select>
+
           <!-- Categoría -->
           <select id="select-task-category" class="select-custom" title="Seleccionar Categoría">
             <option value="Trabajo">💼 Trabajo</option>
@@ -2361,6 +2761,18 @@
           </select>
         </div>
         <div class="form-group">
+          <label class="form-label" for="edit-task-day">Día de la semana asignado</label>
+          <select id="edit-task-day" class="select-custom">
+            <option value="lunes">🗓️ Lunes</option>
+            <option value="martes">🗓️ Martes</option>
+            <option value="miercoles">🗓️ Miércoles</option>
+            <option value="jueves">🗓️ Jueves</option>
+            <option value="viernes">🗓️ Viernes</option>
+            <option value="sabado">🗓️ Sábado</option>
+            <option value="domingo">🗓️ Domingo</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label class="form-label" for="edit-task-priority">Prioridad</label>
           <select id="edit-task-priority" class="select-custom">
             <option value="alta">🔴 Alta</option>
@@ -2454,12 +2866,25 @@
         </div>
       </div>
 
+      <!-- Indicador si el navegador requiere un toque para permitir audio -->
+      <div id="alarm-audio-unlock-banner" class="alarm-sound-unmute-prompt" onclick="window.TaskFlowApp.repeatAlarmVoice(true)" style="display: none;" title="Haz clic para activar el altavoz">
+        <span>🔊 Toca aquí para reproducir el timbre y la voz ahora</span>
+      </div>
+
       <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
         <button class="btn-submit" style="justify-content: center; width: 100%; padding: 0.85rem;" onclick="window.TaskFlowApp.handleAlarmComplete()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
           <span>Marcar como completada</span>
+        </button>
+
+        <button type="button" class="btn-alarm-voice-action" id="btn-alarm-voice" onclick="window.TaskFlowApp.repeatAlarmVoice(true)" title="Reproducir la alarma sonora y la locución en voz alta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <span id="btn-alarm-voice-label">🔊 Escuchar Alarma y Voz</span>
         </button>
 
         <div class="snooze-buttons-row">
@@ -2554,7 +2979,7 @@
     (function registerEmbeddedServiceWorker() {
       if ('serviceWorker' in navigator) {
         const swScript = `
-          const CACHE_NAME = 'taskflow-pwa-v2.5';
+          const CACHE_NAME = 'taskflow-pwa-v2.8';
           self.addEventListener('install', (event) => {
             self.skipWaiting();
           });
@@ -2588,7 +3013,7 @@
           const blob = new Blob([swScript], { type: 'application/javascript' });
           const swUrl = URL.createObjectURL(blob);
           navigator.serviceWorker.register(swUrl)
-            .then(() => console.log('Service Worker PWA v2.2 activo y listo para funcionamiento offline.'))
+            .then(() => console.log('Service Worker PWA v2.6 activo y listo para funcionamiento offline.'))
             .catch((err) => console.warn('Aviso de Service Worker:', err.message));
         } catch (e) {
           console.warn('Registro SW en modo contingencia.');
@@ -2605,6 +3030,42 @@
       const THEME_KEY = 'taskflow_theme_pref';
       const DRAFT_KEY = 'taskflow_form_draft_v2';
       const COLLAPSED_KEY = 'taskflow_collapsed_tasks_v1';
+
+      // Configuración de Días de la semana para el planificador
+      const DAYS_OF_WEEK = [
+        { key: 'lunes', label: 'Lunes', short: 'Lun', num: 1 },
+        { key: 'martes', label: 'Martes', short: 'Mar', num: 2 },
+        { key: 'miercoles', label: 'Miércoles', short: 'Mié', num: 3 },
+        { key: 'jueves', label: 'Jueves', short: 'Jue', num: 4 },
+        { key: 'viernes', label: 'Viernes', short: 'Vie', num: 5 },
+        { key: 'sabado', label: 'Sábado', short: 'Sáb', num: 6 },
+        { key: 'domingo', label: 'Domingo', short: 'Dom', num: 0 }
+      ];
+
+      function getTodayDayKey() {
+        const dayNum = new Date().getDay(); // 0 is Sunday, 1 is Monday...
+        const found = DAYS_OF_WEEK.find(d => d.num === dayNum);
+        return found ? found.key : 'lunes';
+      }
+
+      function getDayLabel(key) {
+        if (!key || key === 'todos') return 'Todos';
+        const found = DAYS_OF_WEEK.find(d => d.key === String(key).toLowerCase());
+        return found ? found.label : 'Lunes';
+      }
+
+      function isValidDayKey(key) {
+        return DAYS_OF_WEEK.some(d => d.key === key);
+      }
+
+      function getDayFromDate(dateStr) {
+        if (!dateStr) return null;
+        const d = new Date(dateStr + (dateStr.length === 10 ? 'T12:00:00' : ''));
+        if (isNaN(d.getTime())) return null;
+        const num = d.getDay();
+        const found = DAYS_OF_WEEK.find(item => item.num === num);
+        return found ? found.key : null;
+      }
 
       // Categorías de configuración
       const CATEGORY_MAP = {
@@ -2627,6 +3088,7 @@
           id: 'demo-1',
           title: 'Pagar la factura de servicios y confirmar comprobante',
           description: 'Revisar saldo en cuenta bancaria, efectuar pago y guardar el PDF del soporte.',
+          dayOfWeek: 'lunes',
           category: 'Personal',
           priority: 'alta',
           dueDate: new Date(nowMs + 86400000).toISOString().split('T')[0],
@@ -2662,6 +3124,7 @@
           id: 'demo-2',
           title: 'Revisión y exportación del informe mensual',
           description: 'Consolidar métricas de productividad e incluir estadísticas de cumplimiento.',
+          dayOfWeek: 'martes',
           category: 'Trabajo',
           priority: 'media',
           dueDate: new Date(nowMs + 172800000).toISOString().split('T')[0],
@@ -2690,6 +3153,7 @@
           id: 'demo-3',
           title: 'Renovar boleto mensual de parqueadero',
           description: 'Verificar tarifa del mes y registrar placa del vehículo.',
+          dayOfWeek: 'miercoles',
           category: 'Parqueadero',
           priority: 'alta',
           dueDate: new Date(nowMs + 259200000).toISOString().split('T')[0],
@@ -2705,6 +3169,7 @@
           id: 'demo-4',
           title: 'Instalar la aplicación como PWA en pantalla de inicio',
           description: 'Añadir a pantalla de inicio para acceso instantáneo sin conexión.',
+          dayOfWeek: 'viernes',
           category: 'Estudio',
           priority: 'baja',
           dueDate: '',
@@ -2724,6 +3189,7 @@
         collapsedTaskIds: new Set(), // IDs de tareas minimizadas
         filter: 'all',          // 'all' | 'pending' | 'with-reminder' | 'completed'
         categoryFilter: 'all',  // 'all' | 'Trabajo' | ...
+        selectedDay: getTodayDayKey(), // 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' | 'sabado' | 'domingo' | 'todos'
         searchQuery: '',
         sortBy: 'created-desc', // 'created-desc' | 'created-asc' | 'reminder-asc' | 'due-date' | 'priority' | 'alpha'
         theme: 'dark',
@@ -2782,6 +3248,7 @@
        */
       function init() {
         loadTheme();
+        initVoiceEngine();
         loadTasks();
         loadCollapsedTasks();
         initFormDraft();
@@ -2815,7 +3282,7 @@
           }
         });
 
-        ['select-task-category', 'select-task-priority', 'input-task-due', 'input-task-reminder'].forEach(id => {
+        ['select-task-day', 'select-task-category', 'select-task-priority', 'input-task-due', 'input-task-reminder'].forEach(id => {
           const el = document.getElementById(id);
           if (el) {
             el.addEventListener('change', handleFormInput);
@@ -2858,6 +3325,7 @@
 
           const titleInput = document.getElementById('input-task-title');
           const descInput = document.getElementById('input-task-description');
+          const daySelect = document.getElementById('select-task-day');
           const catSelect = document.getElementById('select-task-category');
           const prioSelect = document.getElementById('select-task-priority');
           const dueInput = document.getElementById('input-task-due');
@@ -2870,6 +3338,10 @@
           if (draft.description && descInput) {
             descInput.value = draft.description;
             hasContent = true;
+          }
+          if (draft.dayOfWeek && daySelect && isValidDayKey(draft.dayOfWeek)) {
+            daySelect.value = draft.dayOfWeek;
+            state.selectedDay = draft.dayOfWeek;
           }
           if (draft.category && catSelect) {
             catSelect.value = draft.category;
@@ -2911,6 +3383,7 @@
         try {
           const titleInput = document.getElementById('input-task-title');
           const descInput = document.getElementById('input-task-description');
+          const daySelect = document.getElementById('select-task-day');
           const catSelect = document.getElementById('select-task-category');
           const prioSelect = document.getElementById('select-task-priority');
           const dueInput = document.getElementById('input-task-due');
@@ -2919,6 +3392,7 @@
           const draft = {
             title: titleInput ? titleInput.value : '',
             description: descInput ? descInput.value : '',
+            dayOfWeek: daySelect ? daySelect.value : (state.selectedDay !== 'todos' ? state.selectedDay : getTodayDayKey()),
             category: catSelect ? catSelect.value : 'Personal',
             priority: prioSelect ? prioSelect.value : 'media',
             dueDate: dueInput ? dueInput.value : '',
@@ -2977,45 +3451,324 @@
       }
 
       /**
-       * SINTETIZADOR DE AUDIO WEB (Chime Melódico)
-       * Genera un acorde armónico sin depender de archivos de audio externos.
+       * ==========================================================================
+       * MOTOR DE AUDIO Y SÍNTESIS DE VOZ ROBUSTO
+       * Compatible con Chromium, Firefox, Safari, iOS y Android PWA
+       * ==========================================================================
        */
-      function playChimeSound() {
+      const VOICE_KEY = 'taskflow_voice_enabled_v1';
+      let voiceEnabled = true;
+      let availableVoices = [];
+      let globalActiveUtterance = null; // Previene Garbage Collection en Chrome/Edge
+
+      /**
+       * Desbloqueo universal de AudioContext y SpeechSynthesis en cualquier interacción
+       */
+      function unlockAudio() {
         try {
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContextClass) return;
-          
-          if (!audioCtx) {
-            audioCtx = new AudioContextClass();
+          if (AudioContextClass) {
+            if (!audioCtx) {
+              audioCtx = new AudioContextClass();
+            }
+            if (audioCtx.state === 'suspended') {
+              audioCtx.resume().catch(() => {});
+            }
           }
-          if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
+          if ('speechSynthesis' in window) {
+            if (window.speechSynthesis.paused) {
+              window.speechSynthesis.resume();
+            }
+            if (availableVoices.length === 0) {
+              availableVoices = window.speechSynthesis.getVoices() || [];
+            }
           }
+        } catch (e) {
+          console.warn('unlockAudio warning:', e);
+        }
+      }
 
-          const now = audioCtx.currentTime;
-          // Melodía tipo campana / recordatorio (C5, E5, G5, C6)
-          const notes = [523.25, 659.25, 783.99, 1046.50];
-          
-          notes.forEach((freq, idx) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+      // Escuchar cualquier interacción táctil o de clic para desbloquear audio
+      ['click', 'touchstart', 'touchend', 'pointerdown', 'keydown'].forEach(evt => {
+        window.addEventListener(evt, unlockAudio, { passive: true, capture: true });
+      });
 
-            gain.gain.setValueAtTime(0.001, now + idx * 0.12);
-            gain.gain.exponentialRampToValueAtTime(0.3, now + idx * 0.12 + 0.03);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.12 + 0.65);
+      /**
+       * SINTETIZADOR DE TIMBRE DE ALARMA (Web Audio API)
+       * Genera un acorde armónico brillante de alta audibilidad (D5, A5, D6, F#6)
+       */
+      function playChimeSound() {
+        unlockAudio();
+        let played = false;
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            if (!audioCtx) {
+              audioCtx = new AudioContextClass();
+            }
+            if (audioCtx.state === 'suspended') {
+              audioCtx.resume().catch(() => {});
+            }
 
-            osc.start(now + idx * 0.12);
-            osc.stop(now + idx * 0.12 + 0.7);
-          });
+            if (audioCtx.state === 'running') {
+              const now = audioCtx.currentTime;
+              // Secuencia de campana armónica clara y agradable
+              const notes = [587.33, 880.00, 1174.66, 1479.98];
+
+              notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                // Onda triangular con mayor presencia acústica que seno puro
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.11);
+
+                // Ganancia alta (0.65) para que se escuche nítido en altavoces de portátiles y teléfonos
+                gain.gain.setValueAtTime(0.001, now + idx * 0.11);
+                gain.gain.exponentialRampToValueAtTime(0.65, now + idx * 0.11 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.11 + 0.85);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now + idx * 0.11);
+                osc.stop(now + idx * 0.11 + 0.9);
+              });
+              played = true;
+            }
+          }
         } catch (e) {
           console.warn('AudioContext no disponible:', e);
         }
+
+        // Si el navegador bloqueó la reproducción automática, mostrar aviso interactivo en el modal
+        if (!played) {
+          const banner = document.getElementById('alarm-audio-unlock-banner');
+          if (banner) banner.style.display = 'flex';
+        }
+
+        return played;
+      }
+
+      function initVoiceEngine() {
+        try {
+          const saved = localStorage.getItem(VOICE_KEY);
+          voiceEnabled = saved !== null ? saved === 'true' : true;
+        } catch (e) {
+          voiceEnabled = true;
+        }
+        updateVoiceUI();
+
+        if ('speechSynthesis' in window) {
+          function loadVoices() {
+            try {
+              availableVoices = window.speechSynthesis.getVoices() || [];
+            } catch (e) {}
+          }
+          loadVoices();
+          if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+          }
+        }
+      }
+
+      function updateVoiceUI() {
+        const iconOn = document.getElementById('voice-icon-on');
+        const iconOff = document.getElementById('voice-icon-off');
+        const btn = document.getElementById('btn-voice-toggle');
+        if (iconOn && iconOff) {
+          if (voiceEnabled) {
+            iconOn.style.display = 'block';
+            iconOff.style.display = 'none';
+            if (btn) btn.title = 'Voz en notificaciones: Activada (Clic para silenciar)';
+          } else {
+            iconOn.style.display = 'none';
+            iconOff.style.display = 'block';
+            if (btn) btn.title = 'Voz en notificaciones: Silenciada (Clic para activar)';
+          }
+        }
+      }
+
+      function toggleVoice() {
+        voiceEnabled = !voiceEnabled;
+        try {
+          localStorage.setItem(VOICE_KEY, voiceEnabled ? 'true' : 'false');
+        } catch (e) {}
+        updateVoiceUI();
+        if (voiceEnabled) {
+          showToast('Notificaciones con voz activadas 🗣️', 'success');
+          speakText('Notificaciones con voz activadas.');
+        } else {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+          showToast('Voz de notificaciones silenciada 🔇', 'info');
+        }
+      }
+
+      function getBestSpanishVoice() {
+        if (!('speechSynthesis' in window)) return null;
+        const voices = (window.speechSynthesis.getVoices && window.speechSynthesis.getVoices().length > 0)
+          ? window.speechSynthesis.getVoices()
+          : availableVoices;
+
+        if (!voices || voices.length === 0) return null;
+
+        // 1. Coincidencias prioritarias en español
+        const esPref = voices.find(v => v.lang && (v.lang === 'es-ES' || v.lang === 'es-MX' || v.lang === 'es-US' || v.lang === 'es_ES' || v.lang === 'es_MX'));
+        if (esPref) return esPref;
+
+        // 2. Cualquier variante en español (es-CO, es-AR, etc.)
+        const anyEs = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+        if (anyEs) return anyEs;
+
+        // 3. Buscar si el nombre de la voz incluye Spanish o Español
+        const nameEs = voices.find(v => /spanish|español/i.test(v.name));
+        if (nameEs) return nameEs;
+
+        // 4. Fallback a voz por defecto o primera voz para nunca quedar en silencio
+        const def = voices.find(v => v.default);
+        return def || voices[0] || null;
+      }
+
+      function speakText(text, onStartCb, onEndCb) {
+        unlockAudio();
+
+        if (!('speechSynthesis' in window)) {
+          console.warn('SpeechSynthesis no disponible en este navegador');
+          showToast('Tu navegador no soporta síntesis de voz', 'error');
+          if (onEndCb) onEndCb();
+          return;
+        }
+
+        try {
+          // Reanudar estado de pausa si Chrome lo dejó colgado
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+
+          // Cancelar cualquier locución anterior
+          window.speechSynthesis.cancel();
+
+          // Esperar 80ms para evitar que cancel() vacíe el nuevo utterance en Chromium
+          setTimeout(() => {
+            try {
+              if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+              }
+
+              const utterance = new SpeechSynthesisUtterance(text);
+              globalActiveUtterance = utterance; // Referencia global viva anti-Garbage Collection
+
+              const voice = getBestSpanishVoice();
+              if (voice) {
+                utterance.voice = voice;
+                utterance.lang = voice.lang || 'es-ES';
+              } else {
+                utterance.lang = 'es-ES';
+              }
+
+              utterance.rate = 1.0;
+              utterance.pitch = 1.0;
+              utterance.volume = 1.0;
+
+              utterance.onstart = () => {
+                if (onStartCb) onStartCb();
+              };
+
+              utterance.onend = () => {
+                globalActiveUtterance = null;
+                if (onEndCb) onEndCb();
+              };
+
+              utterance.onerror = (e) => {
+                console.warn('Aviso de síntesis de voz:', e);
+                globalActiveUtterance = null;
+                if (onEndCb) onEndCb();
+              };
+
+              window.speechSynthesis.speak(utterance);
+
+              // Reanudar inmediatamente por si Chrome lo congela
+              if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+              }
+            } catch (innerErr) {
+              console.warn('Error al iniciar locución:', innerErr);
+              globalActiveUtterance = null;
+              if (onEndCb) onEndCb();
+            }
+          }, 80);
+
+        } catch (err) {
+          console.warn('Error general en speakText:', err);
+          globalActiveUtterance = null;
+          if (onEndCb) onEndCb();
+        }
+      }
+
+      function speakTaskNotification(task) {
+        if (!voiceEnabled) return;
+        const dayLabel = task.dayOfWeek ? getDayLabel(task.dayOfWeek) : '';
+        const dayText = dayLabel ? ` para el ${dayLabel}` : '';
+        const prioText = task.priority ? `, prioridad ${task.priority}` : '';
+        const text = `¡Atención! Recordatorio de tarea${dayText}: ${task.title}${prioText}.`;
+
+        // Retardo para dejar sonar primero el timbre de campana
+        setTimeout(() => {
+          speakText(text);
+        }, 350);
+      }
+
+      function repeatAlarmVoice(withChime = true) {
+        unlockAudio();
+
+        const btn = document.getElementById('btn-alarm-voice');
+        const label = document.getElementById('btn-alarm-voice-label');
+        const unlockBanner = document.getElementById('alarm-audio-unlock-banner');
+        if (unlockBanner) unlockBanner.style.display = 'none';
+
+        if (withChime) {
+          playChimeSound();
+        }
+
+        if (label) label.textContent = '🔊 Reproduciendo voz...';
+        if (btn) btn.classList.add('speaking');
+
+        let textToSpeak = '¡Atención! Recordatorio de tarea cumplida.';
+        if (state.activeAlarmTaskId) {
+          const task = state.tasks.find(t => t.id === state.activeAlarmTaskId);
+          if (task) {
+            const dayLabel = task.dayOfWeek ? getDayLabel(task.dayOfWeek) : '';
+            const dayText = dayLabel ? ` para el ${dayLabel}` : '';
+            const prioText = task.priority ? `, prioridad ${task.priority}` : '';
+            textToSpeak = `¡Atención! Recordatorio de tarea${dayText}: ${task.title}${prioText}.`;
+          }
+        }
+
+        setTimeout(() => {
+          speakText(
+            textToSpeak,
+            () => {
+              if (label) label.textContent = '🔊 Hablando ahora...';
+            },
+            () => {
+              if (label) label.textContent = '🔊 Escuchar de nuevo con voz';
+              if (btn) btn.classList.remove('speaking');
+            }
+          );
+        }, withChime ? 350 : 60);
+      }
+
+      function testVoice() {
+        unlockAudio();
+        playChimeSound();
+        showToast('🔊 Reproduciendo sonido y locución de prueba...', 'info');
+
+        setTimeout(() => {
+          speakText('¡Hola! Las notificaciones con sonido y voz de TaskFlow están activas y funcionando correctamente.');
+        }, 350);
       }
 
       /**
@@ -3152,17 +3905,20 @@
        * DISPARAR ALARMA Y NOTIFICACIÓN PARA UNA TAREA
        */
       function triggerAlarmForTask(task) {
-        // 1. Sonido
+        // 1. Sonido melódico
         playChimeSound();
 
-        // 2. Vibración móvil si está disponible
+        // 2. Notificación hablada con voz en español
+        speakTaskNotification(task);
+
+        // 3. Vibración móvil si está disponible
         if ('vibrate' in navigator) {
           try {
             navigator.vibrate([200, 100, 200, 100, 200]);
           } catch (e) {}
         }
 
-        // 3. Notificación del Navegador
+        // 4. Notificación del Navegador
         const timeFormatted = new Date(task.reminderTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         sendBrowserNotification(
           `⏰ ¡Alarma: ${task.title}!`,
@@ -3174,6 +3930,10 @@
         state.activeAlarmTaskId = task.id;
         const alarmTitleEl = document.getElementById('alarm-task-title');
         const alarmMetaEl = document.getElementById('alarm-task-meta');
+        const unlockBanner = document.getElementById('alarm-audio-unlock-banner');
+        const btnVoiceLabel = document.getElementById('btn-alarm-voice-label');
+
+        if (btnVoiceLabel) btnVoiceLabel.textContent = '🔊 Escuchar Alarma y Voz';
 
         if (alarmTitleEl) alarmTitleEl.textContent = task.title;
         if (alarmMetaEl) {
@@ -3184,6 +3944,15 @@
             <span>•</span>
             <span>⏰ ${timeFormatted}</span>
           `;
+        }
+
+        // Si el AudioContext no está corriendo (bloqueo de autoplay por política del navegador)
+        if (unlockBanner) {
+          if (!audioCtx || audioCtx.state === 'suspended') {
+            unlockBanner.style.display = 'flex';
+          } else {
+            unlockBanner.style.display = 'none';
+          }
         }
 
         openModal('modal-alarm-alert');
@@ -3251,10 +4020,16 @@
        * Test rápido en 5 segundos
        */
       function triggerQuickTest(seconds = 5) {
+        // Desbloquear audio en el clic del usuario para asegurar reproducción
+        unlockAudio();
+
         // Pedir permiso si no está otorgado
         if ('Notification' in window && Notification.permission === 'default') {
           requestNotificationPermission();
         }
+
+        // Tocar suavemente timbre durante el clic para activar el contexto de audio del navegador
+        playChimeSound();
 
         const testTime = new Date(Date.now() + seconds * 1000);
         const testTask = {
@@ -3273,7 +4048,7 @@
         saveTasks();
         render();
 
-        showToast(`⚡ Alarma de prueba creada. Sonará en ${seconds} segundos...`, 'info');
+        showToast(`⚡ Alarma activada. Sonará y hablará en ${seconds} segundos...`, 'info');
       }
 
       /**
@@ -3337,6 +4112,9 @@
         return rawTasks.map(t => ({
           ...t,
           description: t.description || '',
+          dayOfWeek: (t.dayOfWeek && isValidDayKey(t.dayOfWeek)) 
+            ? t.dayOfWeek 
+            : (getDayFromDate(t.dueDate) || getTodayDayKey()),
           subtasks: Array.isArray(t.subtasks) ? t.subtasks.map(s => normalizeSubtaskItem(s)) : []
         }));
       }
@@ -3803,6 +4581,7 @@
       function handleAddTask() {
         const titleInput = document.getElementById('input-task-title');
         const descInput = document.getElementById('input-task-description');
+        const daySelect = document.getElementById('select-task-day');
         const catSelect = document.getElementById('select-task-category');
         const prioSelect = document.getElementById('select-task-priority');
         const dueInput = document.getElementById('input-task-due');
@@ -3814,6 +4593,11 @@
         const description = descInput ? descInput.value.trim() : '';
         const reminderVal = reminderInput ? reminderInput.value : '';
 
+        // Día asignado: del select del formulario o el día activo actual
+        const assignedDay = (daySelect && isValidDayKey(daySelect.value))
+          ? daySelect.value
+          : (state.selectedDay !== 'todos' ? state.selectedDay : getTodayDayKey());
+
         // Si tiene recordatorio y no tiene permisos de notificación, solicitar amigablemente
         if (reminderVal && 'Notification' in window && Notification.permission === 'default') {
           requestNotificationPermission();
@@ -3823,6 +4607,7 @@
           id: 'task-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
           title: title,
           description: description,
+          dayOfWeek: assignedDay,
           category: catSelect ? catSelect.value : 'Personal',
           priority: prioSelect ? prioSelect.value : 'media',
           dueDate: dueInput ? dueInput.value : '',
@@ -3846,11 +4631,12 @@
 
         titleInput.focus();
 
+        const dayName = getDayLabel(assignedDay);
         if (reminderVal) {
           const remDate = new Date(reminderVal);
-          showToast(`Tarea guardada con alarma para ${remDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 'success');
+          showToast(`Tarea agregada para el ${dayName} con alarma a las ${remDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 'success');
         } else {
-          showToast('Tarea agregada exitosamente', 'success');
+          showToast(`Tarea agregada para el ${dayName}`, 'success');
         }
       }
 
@@ -3913,6 +4699,12 @@
         document.getElementById('edit-task-title').value = task.title;
         document.getElementById('edit-task-description').value = task.description || '';
         document.getElementById('edit-task-category').value = task.category || 'Personal';
+        
+        const dayEl = document.getElementById('edit-task-day');
+        if (dayEl) {
+          dayEl.value = (task.dayOfWeek && isValidDayKey(task.dayOfWeek)) ? task.dayOfWeek : getTodayDayKey();
+        }
+
         document.getElementById('edit-task-priority').value = task.priority || 'media';
         document.getElementById('edit-task-due').value = task.dueDate || '';
         document.getElementById('edit-task-reminder').value = task.reminderTime || '';
@@ -3939,10 +4731,14 @@
 
         const prevReminder = task.reminderTime;
         const newReminder = document.getElementById('edit-task-reminder').value;
+        const dayEl = document.getElementById('edit-task-day');
 
         task.title = newTitle;
         task.description = document.getElementById('edit-task-description').value.trim();
         task.category = document.getElementById('edit-task-category').value;
+        if (dayEl && isValidDayKey(dayEl.value)) {
+          task.dayOfWeek = dayEl.value;
+        }
         task.priority = document.getElementById('edit-task-priority').value;
         task.dueDate = document.getElementById('edit-task-due').value;
         task.reminderTime = newReminder;
@@ -3984,6 +4780,143 @@
           }
         });
         render();
+      }
+
+      /**
+       * GESTIÓN Y FILTRADO POR DÍA DE LA SEMANA
+       */
+      function setDayFilter(dayKey) {
+        state.selectedDay = dayKey;
+        const daySelect = document.getElementById('select-task-day');
+        if (daySelect && isValidDayKey(dayKey)) {
+          daySelect.value = dayKey;
+        }
+        render();
+        if (dayKey === 'todos') {
+          showToast('Mostrando todas las tareas de la semana', 'info');
+        } else {
+          showToast(`Mostrando tareas del ${getDayLabel(dayKey)}`, 'info');
+        }
+      }
+
+      function selectToday() {
+        const todayKey = getTodayDayKey();
+        setDayFilter(todayKey);
+      }
+
+      function handleTaskDayChange(dayKey) {
+        if (state.selectedDay !== 'todos' && state.selectedDay !== dayKey) {
+          state.selectedDay = dayKey;
+          render();
+        }
+        saveFormDraft();
+      }
+
+      function renderWeekDaysGrid() {
+        const grid = document.getElementById('week-days-grid');
+        const badge = document.getElementById('week-active-day-badge');
+        const btnToday = document.getElementById('btn-week-today');
+        const btnAll = document.getElementById('btn-week-all');
+        const inputTitle = document.getElementById('input-task-title');
+        const boxTitle = document.getElementById('creator-box-title');
+        const daySelect = document.getElementById('select-task-day');
+        const todayKey = getTodayDayKey();
+
+        // Conteo de tareas para cada día de la semana
+        const counts = {
+          lunes: 0,
+          martes: 0,
+          miercoles: 0,
+          jueves: 0,
+          viernes: 0,
+          sabado: 0,
+          domingo: 0,
+          todos: state.tasks.length
+        };
+
+        state.tasks.forEach(t => {
+          const k = t.dayOfWeek || todayKey;
+          if (counts[k] !== undefined) {
+            counts[k]++;
+          }
+        });
+
+        // Actualizar etiqueta del día activo
+        if (badge) {
+          if (state.selectedDay === 'todos') {
+            badge.innerHTML = `✨ Todos los días (${state.tasks.length})`;
+          } else {
+            const isToday = state.selectedDay === todayKey;
+            badge.innerHTML = `🗓️ ${getDayLabel(state.selectedDay)}${isToday ? ' <span style="font-weight: 800; color: #10b981; font-size: 0.68rem; margin-left: 2px;">(Hoy)</span>' : ''}`;
+          }
+        }
+
+        // Estado visual de botones rápidos
+        if (btnToday) {
+          btnToday.classList.toggle('active', state.selectedDay === todayKey);
+        }
+        if (btnAll) {
+          btnAll.classList.toggle('active', state.selectedDay === 'todos');
+        }
+
+        // Título del formulario y placeholder contextual
+        if (inputTitle) {
+          if (state.selectedDay !== 'todos') {
+            inputTitle.placeholder = `¿Qué necesitas hacer el ${getDayLabel(state.selectedDay)}?...`;
+          } else {
+            inputTitle.placeholder = '¿Qué necesitas hacer hoy?...';
+          }
+        }
+        if (boxTitle) {
+          if (state.selectedDay !== 'todos') {
+            boxTitle.textContent = `Nueva Tarea para el ${getDayLabel(state.selectedDay)}`;
+          } else {
+            boxTitle.textContent = 'Nueva Tarea';
+          }
+        }
+        if (daySelect && state.selectedDay !== 'todos') {
+          daySelect.value = state.selectedDay;
+        }
+
+        // Renderizado de botones de los días
+        if (grid) {
+          let html = DAYS_OF_WEEK.map(d => {
+            const isToday = d.key === todayKey;
+            const isActive = state.selectedDay === d.key;
+            const count = counts[d.key] || 0;
+            return `
+              <button 
+                type="button" 
+                class="week-day-btn ${isActive ? 'active' : ''} ${isToday ? 'is-today' : ''}" 
+                onclick="window.TaskFlowApp.setDayFilter('${d.key}')"
+                role="tab"
+                aria-selected="${isActive ? 'true' : 'false'}"
+                title="Ver tareas del ${d.label}${isToday ? ' (Hoy)' : ''}"
+              >
+                <span class="week-day-name">${d.short}</span>
+                ${isToday ? '<span class="week-day-today-tag">HOY</span>' : ''}
+                <span class="week-day-badge">${count}</span>
+              </button>
+            `;
+          }).join('');
+
+          const isAllActive = state.selectedDay === 'todos';
+          html += `
+            <button 
+              type="button" 
+              class="week-day-btn ${isAllActive ? 'active' : ''}" 
+              onclick="window.TaskFlowApp.setDayFilter('todos')"
+              role="tab"
+              aria-selected="${isAllActive ? 'true' : 'false'}"
+              title="Ver todas las tareas de la semana"
+            >
+              <span class="week-day-name">Todos</span>
+              <span class="week-day-badge">${counts.todos}</span>
+            </button>
+          `;
+
+          grid.innerHTML = html;
+        }
       }
 
       function handleSearch(query) {
@@ -4100,11 +5033,12 @@
               throw new Error('El archivo no contiene un formato de tareas válido.');
             }
 
-            // Normalización y validación con soporte para subtareas anidadas
+            // Normalización y validación con soporte para subtareas anidadas y día de la semana
             const validTasks = importedTasks.map((t, idx) => ({
               id: t.id || 'imp-' + Date.now() + '-' + idx,
               title: String(t.title || 'Tarea sin título'),
               description: String(t.description || ''),
+              dayOfWeek: (t.dayOfWeek && isValidDayKey(t.dayOfWeek)) ? t.dayOfWeek : (getDayFromDate(t.dueDate) || getTodayDayKey()),
               category: t.category || 'Personal',
               priority: ['alta', 'media', 'baja'].includes(t.priority) ? t.priority : 'media',
               dueDate: t.dueDate || '',
@@ -4153,6 +5087,9 @@
        * Renderizado reactivo de la interfaz
        */
       function render() {
+        // Renderizar cuadrícula del planificador semanal y sincronizar encabezados
+        renderWeekDaysGrid();
+
         const totalCount = state.tasks.length;
         const pendingCount = state.tasks.filter(t => !t.completed).length;
         const reminderCount = state.tasks.filter(t => Boolean(t.reminderTime) && !t.completed).length;
@@ -4185,6 +5122,11 @@
 
         // Filtrado
         let filtered = state.tasks.filter(task => {
+          // Filtro por Día de la semana seleccionado
+          if (state.selectedDay && state.selectedDay !== 'todos') {
+            if (task.dayOfWeek !== state.selectedDay) return false;
+          }
+
           // Filtro por Estado
           if (state.filter === 'pending' && task.completed) return false;
           if (state.filter === 'completed' && !task.completed) return false;
@@ -4237,16 +5179,25 @@
         if (!listContainer) return;
 
         if (filtered.length === 0) {
+          const isDayFilter = state.selectedDay && state.selectedDay !== 'todos';
+          const dayName = isDayFilter ? getDayLabel(state.selectedDay) : '';
+          const emptyTitle = isDayFilter ? `No hay tareas para el ${dayName}` : `No hay tareas en esta vista`;
+          const emptyDesc = isDayFilter 
+            ? `Escribe arriba una tarea para el ${dayName} y presiona "Agregar" para organizarla.` 
+            : `Crea una nueva tarea con el formulario superior o ajusta los filtros seleccionados.`;
+
           listContainer.innerHTML = `
             <div class="empty-state" id="empty-state-view">
               <div class="empty-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="m9 12 2 2 4-4"></path>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
               </div>
-              <h3 class="empty-title">No hay tareas en esta vista</h3>
-              <p class="empty-desc">Crea una nueva tarea con el formulario superior o ajusta los filtros seleccionados.</p>
+              <h3 class="empty-title">${escapeHTML(emptyTitle)}</h3>
+              <p class="empty-desc">${escapeHTML(emptyDesc)}</p>
             </div>
           `;
           return;
@@ -4540,6 +5491,13 @@
                 </div>
 
                 <div class="task-meta">
+                  <span 
+                    class="meta-tag tag-day" 
+                    onclick="event.stopPropagation(); window.TaskFlowApp.setDayFilter('${task.dayOfWeek || 'lunes'}')" 
+                    title="Día asignado: ${getDayLabel(task.dayOfWeek)}. Clic para ver tareas de este día."
+                  >
+                    🗓️ ${getDayLabel(task.dayOfWeek)}
+                  </span>
                   <span class="meta-tag tag-category" style="--cat-color: ${catInfo.color}">
                     ${escapeHTML(catInfo.label)}
                   </span>
@@ -4676,10 +5634,17 @@
         saveEditedTask,
         setFilter,
         setCategoryFilter,
+        setDayFilter,
+        selectToday,
+        handleTaskDayChange,
+        getDayLabel,
         handleSearch,
         handleSortChange,
         requestNotificationPermission,
         triggerQuickTest,
+        toggleVoice,
+        testVoice,
+        repeatAlarmVoice,
         setFormPresetMinutes,
         setFormPresetTomorrow,
         snoozeTask,
